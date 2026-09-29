@@ -15,16 +15,16 @@ VERSION = "5.5.0"                                       # shown on the download 
 TRAILER_YT = ""                                         # a YouTube video ID for the trailer, e.g. "dQw4w9WgXcQ"; empty = "coming soon"
 SITE_URL = ""                                           # the site's address once it's online, e.g. "https://reelworks.pages.dev" (for link previews)
 
-# The team, for the About page. Replace these with the real people: name, role,
-# one line about them, and optionally a picture (a file in assets/team/ or a web
-# address). Without a picture, the card shows their initials in the role's colour.
+# The team, for the About page, top of the hierarchy first. "level" 1 is the
+# top; people on the same level sit side by side. "discord" is their Discord
+# user ID: the picture comes from their Discord profile (through the service).
+# "picture" (a file in assets/team/ or a web address) overrides it if set.
 TEAM = [
-  {"name": "Your name", "role": "Macro Developer", "about": "Builds FISCHXR and keeps it working with every Fisch update.", "picture": ""},
-  {"name": "Your name", "role": "Macro Creator", "about": "Designs how FISCHXR plays each rod.", "picture": ""},
-  {"name": "Your name", "role": "Macro Tester", "about": "Fishes with every build before it ships.", "picture": ""},
-  {"name": "Your name", "role": "Content Creator", "about": "Makes the videos and clips.", "picture": ""},
+  {"level": 1, "name": "Silver :3", "role": "ReelWorks", "about": "Leads ReelWorks.", "discord": "938088453453803551", "picture": ""},
+  {"level": 2, "name": "Exoartar", "role": "Development Lead", "about": "Builds FISCHXR and keeps it working with every Fisch update.", "discord": "1531039490678980741", "picture": ""},
+  {"level": 3, "name": "Jester", "role": "Lead Tester", "about": "Fishes with every build before it ships.", "discord": "776112976075423756", "picture": ""},
 ]
-ROLE_COLOURS = {"Macro Developer": "#A970FF", "Macro Creator": "#FFC940", "Macro Tester": "#3FE0F0", "Content Creator": "#FF4FD8"}
+ROLE_COLOURS = {"ReelWorks": "#FFC940", "Development Lead": "#A970FF", "Lead Tester": "#3FE0F0"}
 
 DL = SERVICE + "/download"                              # counted, then sent on to the file (see the service README)
 DISCORD = "https://discord.gg/ERkjTTYG4B"
@@ -346,10 +346,24 @@ print("changelog and 404 written")
 def about_page():
     def card(m):
         col = ROLE_COLOURS.get(m["role"], "#3FE0C8")
-        initials = "".join(w[0] for w in m["name"].split()[:2]).upper() or "?"
-        pic = ('<img src="%s" alt="" loading="lazy">' % html.escape(m["picture"])) if m.get("picture") else ('<span class="initials">%s</span>' % html.escape(initials))
-        return ('<article class="member" data-c="%s"><div class="face" style="--c:%s">%s</div><h3>%s</h3>'
-                '<p class="role" style="color:%s">%s</p><p>%s</p></article>\n') % (col, col, pic, html.escape(m["name"]), col, html.escape(m["role"]), html.escape(m["about"]))
+        letters = [w[0] for w in m["name"].split() if w[:1].isalnum()][:2]
+        initials = "".join(letters).upper() or m["name"][:1].upper() or "?"
+        src = m.get("picture") or (SERVICE.rstrip("/") + "/avatar/" + m["discord"] if m.get("discord") else "")
+        pic = ('<img src="%s" alt="" loading="lazy" onerror="this.remove()">' % html.escape(src)) if src else ""
+        return ('<article class="member lv%d" data-c="%s"><div class="face" style="--c:%s"><span class="initials">%s</span>%s</div>'
+                '<p class="role" style="color:%s">%s</p><h3>%s</h3><p>%s</p></article>') % (
+                m.get("level", 1), col, col, html.escape(initials), pic, col, html.escape(m["role"]), html.escape(m["name"]), html.escape(m["about"]))
+    levels = sorted(set(m.get("level", 1) for m in TEAM))
+    rows = []
+    for i, lv in enumerate(levels):
+        people = [m for m in TEAM if m.get("level", 1) == lv]
+        top = ROLE_COLOURS.get(people[0]["role"], "#3FE0C8")
+        link = ""
+        if i + 1 < len(levels):
+            nxt = [m for m in TEAM if m.get("level", 1) == levels[i + 1]][0]
+            link = '<div class="link" aria-hidden="true" style="--a:%s;--b:%s"></div>' % (top, ROLE_COLOURS.get(nxt["role"], "#3FE0C8"))
+        rows.append('<div class="tier">%s</div>%s' % ("".join(card(m) for m in people), link))
+    tree = '<div class="tree reveal">' + "\n".join(rows) + '</div>'
     return head("About | FISCHXR by ReelWorks", "ReelWorks is the team behind FISCHXR.", "about") + """
 <div class="wrap">
   <div class="top">
@@ -357,9 +371,8 @@ def about_page():
     <p class="lede"><b>ReelWorks</b> builds and looks after FISCHXR: the macro, its Discord bot and this site.</p>
   </div>
 
-  <section class="reveal">
-    <div class="team stagger">
-""" + "".join(card(m) for m in TEAM) + """    </div>
+  <section>
+    """ + tree + """
   </section>
 
   <section class="reveal">
