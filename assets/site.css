@@ -408,3 +408,26 @@ body.menu-open { overflow: hidden; }
   .team { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .menu-btn span, .mnav, .member { transition: none; } }
+
+/* ---------- the team, as a hierarchy ---------- */
+.tree { display: flex; flex-direction: column; align-items: center; }
+.tier { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.tree .link { width: 2px; height: 46px; background: linear-gradient(var(--a), var(--b)); opacity: .7; position: relative; }
+.tree .link::after { content: ""; position: absolute; left: 50%; bottom: -3px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--b); box-shadow: 0 0 12px var(--b); }
+.member { width: 280px; position: relative; }
+.member .face { position: relative; }
+.member .face .initials { position: absolute; inset: 0; display: grid; place-items: center; }
+.member .face img { position: absolute; inset: 0; }
+.member .role { margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+.member h3 { margin: 0 0 8px; }
+.member.lv1 { width: 340px; padding: 34px 26px 28px; border-color: color-mix(in srgb, var(--c) 40%, var(--line));
+  background: radial-gradient(260px 160px at 50% 0%, color-mix(in srgb, var(--c) 14%, transparent), transparent 75%), var(--panel);
+  box-shadow: 0 0 60px -24px var(--c); }
+.member.lv1 .face { width: 112px; height: 112px; }
+.member.lv1 .initials { font-size: 36px; }
+.member.lv1 h3 { font-size: 24px; }
+.member.lv1 .role { font-size: 14px; }
+.member.lv2 { width: 300px; }
+.member.lv2 .face { width: 92px; height: 92px; }
+.member:not(.lv1):not(.lv2) .face { width: 76px; height: 76px; }
+@media (max-width: 440px) { .member, .member.lv1, .member.lv2 { width: 100%; } }
