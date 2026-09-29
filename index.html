@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>FISCHXR by ReelWorks, a fishing macro for Fisch</title>
+<meta name="description" content="FISCHXR fishes Fisch for you, special rods included. Made by ReelWorks. Free.">
+<meta property="og:site_name" content="FISCHXR by ReelWorks">
+<meta property="og:title" content="FISCHXR by ReelWorks, a fishing macro for Fisch">
+<meta property="og:description" content="FISCHXR fishes Fisch for you, special rods included. Made by ReelWorks. Free.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+<div class="bar">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><b>FISCHXR</b> <small>by ReelWorks</small></span></a>
+    <nav aria-label="Pages"><a href="index.html" aria-current="page">Home</a><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="changelog.html">Changelog</a><a href="download.html">Download</a></nav>
+    <div class="acts"><a class="quiet" href="https://discord.gg/ERkjTTYG4B">Discord</a><a class="btn white" href="download.html">Download</a></div>
+  </div>
+</div>
+<main>
+
+<div class="wrap">
+  <div class="top">
+    <canvas id="motes" aria-hidden="true"></canvas>
+    <h1>Press F1. Go do something else.</h1>
+    <p class="lede">FISCHXR fishes Fisch for you, <b>special rods included</b>.</p>
+    <div class="get">
+      <div class="row">
+        <a class="btn white big" href="https://fischxr-api.exoartar.workers.dev/download" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m0 0l-4-4m4 4l4-4M4 15h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download for Windows</a>
+        <a class="btn ghost big" href="https://discord.gg/ERkjTTYG4B">Join the Discord</a>
+      </div>
+      <p class="fine">Version 5.4.9. Free. One file, nothing else to install.</p>
+    </div>
+    <div class="live" aria-label="A live example of the bar following the fish">
+      <div class="head"><span><span class="dot"></span><b>Reeling</b><span class="rod-now" id="rodnow">Standard rod</span></span><span id="caught">0 caught</span></div>
+      <canvas id="reel" role="img" aria-label="A reel: a white bar steers itself onto a fish as it moves along the track."></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="shelf" aria-label="Rods FISCHXR handles">
+  <div class="track">
+    <a href="rods.html#noiseform" data-c="#3FE0A0"><img src="assets/renders/noiseform.png" alt="Noiseform" loading="lazy">Noiseform</a>
+    <a href="rods.html#pinion" data-c="#A98BFF"><img src="assets/renders/pinion.png" alt="Pinion&#x27;s Aria" loading="lazy">Pinion&#x27;s Aria</a>
+    <a href="rods.html#verdant" data-c="#6BE04A"><img src="assets/renders/verdant.png" alt="Verdant Oath" loading="lazy">Verdant Oath</a>
+    <a href="rods.html#ruinous" data-c="#FF4040"><img src="assets/renders/ruinous.png" alt="Ruinous Oath" loading="lazy">Ruinous Oath</a>
+    <a href="rods.html#luminescent" data-c="#4F8BFF"><img src="assets/renders/luminescent.png" alt="Luminescent Oath" loading="lazy">Luminescent Oath</a>
+    <a href="rods.html#poseidon" data-c="#3FA8FF"><img src="assets/renders/poseidon.png" alt="Poseidon&#x27;s Lance" loading="lazy">Poseidon&#x27;s Lance</a>
+    <a href="rods.html#bellona" data-c="#FF6A3A"><img src="assets/renders/bellona.png" alt="Bellona&#x27;s Waraxe" loading="lazy">Bellona&#x27;s Waraxe</a>
+    <a href="rods.html#apollo" data-c="#FFA640"><img src="assets/renders/apollo.png" alt="Apollo&#x27;s Sunshot" loading="lazy">Apollo&#x27;s Sunshot</a>
+    <a href="rods.html#cinder" data-c="#BDBDBD"><img src="assets/renders/cinder.png" alt="Cinder Block Rod" loading="lazy">Cinder Block Rod</a>
+    <a href="rods.html#requiem" data-c="#35D07F"><img src="assets/renders/requiem.png" alt="Requiem" loading="lazy">Requiem</a>
+    <a href="rods.html#splitbranch" data-c="#C79463"><img src="assets/renders/splitbranch.png" alt="Splitbranch Twig" loading="lazy">Splitbranch Twig</a>
+    <a href="rods.html#noiseform" data-c="#3FE0A0" aria-hidden="true" tabindex="-1"><img src="assets/renders/noiseform.png" alt="" loading="lazy">Noiseform</a>
+    <a href="rods.html#pinion" data-c="#A98BFF" aria-hidden="true" tabindex="-1"><img src="assets/renders/pinion.png" alt="" loading="lazy">Pinion&#x27;s Aria</a>
+    <a href="rods.html#verdant" data-c="#6BE04A" aria-hidden="true" tabindex="-1"><img src="assets/renders/verdant.png" alt="" loading="lazy">Verdant Oath</a>
+    <a href="rods.html#ruinous" data-c="#FF4040" aria-hidden="true" tabindex="-1"><img src="assets/renders/ruinous.png" alt="" loading="lazy">Ruinous Oath</a>
+    <a href="rods.html#luminescent" data-c="#4F8BFF" aria-hidden="true" tabindex="-1"><img src="assets/renders/luminescent.png" alt="" loading="lazy">Luminescent Oath</a>
+    <a href="rods.html#poseidon" data-c="#3FA8FF" aria-hidden="true" tabindex="-1"><img src="assets/renders/poseidon.png" alt="" loading="lazy">Poseidon&#x27;s Lance</a>
+    <a href="rods.html#bellona" data-c="#FF6A3A" aria-hidden="true" tabindex="-1"><img src="assets/renders/bellona.png" alt="" loading="lazy">Bellona&#x27;s Waraxe</a>
+    <a href="rods.html#apollo" data-c="#FFA640" aria-hidden="true" tabindex="-1"><img src="assets/renders/apollo.png" alt="" loading="lazy">Apollo&#x27;s Sunshot</a>
+    <a href="rods.html#cinder" data-c="#BDBDBD" aria-hidden="true" tabindex="-1"><img src="assets/renders/cinder.png" alt="" loading="lazy">Cinder Block Rod</a>
+    <a href="rods.html#requiem" data-c="#35D07F" aria-hidden="true" tabindex="-1"><img src="assets/renders/requiem.png" alt="" loading="lazy">Requiem</a>
+    <a href="rods.html#splitbranch" data-c="#C79463" aria-hidden="true" tabindex="-1"><img src="assets/renders/splitbranch.png" alt="" loading="lazy">Splitbranch Twig</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="centered reveal">
+    <h2>Every rod, handled.</h2>
+    <p class="sub">Some rods have reels with their own rules. FISCHXR knows them.</p>
+    <p style="margin-top:26px"><a class="btn ghost" href="rods.html">See the rods</a></p>
+  </section>
+
+  <section class="reveal">
+    <div class="feat">
+      <div class="words">
+        <h3>The chores, too.</h3>
+        <p>Totems, your aquarium, Sovereign, and Discord alerts when something needs you.</p>
+        <p><a class="btn ghost" href="features.html">See the features</a></p>
+      </div>
+      <img src="assets/app/totems.png" alt="FISCHXR's Totems page" loading="lazy">
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="count live-numbers" data-service= + SERVICE + >
+      <div><b data-live="fishing">&ndash;</b><span><i class="livedot" aria-hidden="true"></i>fishing right now</span></div>
+      <div><b data-live="users">&ndash;</b><span>people using FISCHXR</span></div>
+      <div><b data-live="downloads">&ndash;</b><span>downloads</span></div>
+      <div><b data-to="11">0</b><span>special rods handled</span></div>
+    </div>
+  </section>
+
+  <section class="centered reveal">
+    <h2>See it fish.</h2>
+    <p class="sub" style="margin-bottom:34px">A minute of FISCHXR doing the work.</p>
+    <div class="trailer soon" role="img" aria-label="Trailer coming soon"><div class="play" aria-hidden="true"></div><p><b>Trailer coming soon</b>Watch this space.</p></div>
+  </section>
+
+  <section id="plus" class="centered reveal plus-sec">
+    <h2>Free, or <span class="pink">Plus</span>.</h2>
+    <p class="sub">Everything that fishes is free. Boost the Discord for a few extras.</p>
+    <div class="chart" role="group" aria-label="FISCHXR and FISCHXR Plus compared">
+      <div class="col lbl"><div class="cell head"></div><div class="cell">Casting, shaking and reeling</div><div class="cell">Every special rod</div><div class="cell">Totems, aquarium and Sovereign</div><div class="cell">Rejoins after a disconnect</div><div class="cell">Discord alerts, <kbd>/start</kbd> and <kbd>/stop</kbd></div><div class="cell">Fishing goals that ping you</div><div class="cell">Catch rate on the fishing panel</div><div class="cell foot"></div></div>
+      <div class="col"><div class="cell head"><span class="name">FISCHXR</span><span class="price">Free</span><span class="small">Everything that fishes</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg class="no" viewBox="0 0 20 20" aria-label="No"><path d="M5.5 5.5l9 9m0-9l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="sr">Not included</span></div><div class="cell"><svg class="no" viewBox="0 0 20 20" aria-label="No"><path d="M5.5 5.5l9 9m0-9l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="sr">Not included</span></div><div class="cell foot"><a class="btn ghost" href="https://fischxr-api.exoartar.workers.dev/download" download>Download free</a></div></div>
+      <div class="col plus"><span class="badge">For boosters</span><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i><i class="sp"></i>
+        <div class="cell head"><span class="name">FISCHXR Plus</span><span class="price pink">Plus</span><span class="small">Boost the Discord server</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell"><svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Included</span></div><div class="cell foot"><a class="btn pinkb" href="https://discord.gg/ERkjTTYG4B">Boost for Plus</a></div></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="maker">
+      <p><b>Made by ReelWorks.</b> A rod giving it trouble? Send us a clip in the Discord.</p>
+      <a class="btn ghost" href="https://discord.gg/ERkjTTYG4B">Join the Discord</a>
+    </div>
+  </section>
+
+  <section class="centered reveal">
+    <h2>Ready?</h2>
+    <p class="sub" style="margin-bottom:28px">One file. A couple of minutes.</p>
+    <div class="get">
+      <div class="row">
+        <a class="btn white big" href="https://fischxr-api.exoartar.workers.dev/download" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m0 0l-4-4m4 4l4-4M4 15h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download for Windows</a>
+        <a class="btn ghost big" href="https://discord.gg/ERkjTTYG4B">Join the Discord</a>
+      </div>
+      <p class="fine">Version 5.4.9. Free. One file, nothing else to install.</p>
+    </div>
+  </section>
+</div>
+</main>
+<footer>
+  <div class="wrap">
+    <div>
+      <p class="by">FISCHXR is made by ReelWorks.</p>
+      <p>Made by fans, not affiliated with Roblox or the makers of Fisch. Macros can break game rules, so use it at your own risk.</p>
+    </div>
+    <nav aria-label="Footer links"><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="download.html">Download</a><a href="https://discord.gg/ERkjTTYG4B">Discord</a></nav>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
