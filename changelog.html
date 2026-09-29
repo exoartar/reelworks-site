@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
 <title>Changelog | FISCHXR by ReelWorks</title>
 <meta name="description" content="Every FISCHXR update, newest first.">
 <meta property="og:site_name" content="FISCHXR by ReelWorks">
@@ -17,15 +18,18 @@
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <div class="progress" aria-hidden="true"></div>
 <div class="bar">
   <div class="wrap">
     <a class="brand" href="index.html"><img src="assets/logo.png" alt=""><span><b>FISCHXR</b> <small>by ReelWorks</small></span></a>
-    <nav aria-label="Pages"><a href="index.html">Home</a><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="changelog.html" aria-current="page">Changelog</a><a href="download.html">Download</a></nav>
-    <div class="acts"><a class="quiet" href="https://discord.gg/ERkjTTYG4B">Discord</a><a class="btn white" href="download.html">Download</a></div>
+    <nav aria-label="Pages"><a href="index.html">Home</a><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="changelog.html" aria-current="page">Changelog</a><a href="about.html">About</a><a href="download.html">Download</a></nav>
+    <div class="acts"><a class="quiet" href="https://discord.gg/ERkjTTYG4B">Discord</a><a class="btn white" href="download.html">Download</a>
+      <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav"><span></span><span></span></button></div>
   </div>
 </div>
-<main>
+<nav class="mnav" id="mnav" aria-label="Pages"><a href="index.html">Home</a><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="changelog.html" aria-current="page">Changelog</a><a href="about.html">About</a><a href="download.html">Download</a><a href="https://discord.gg/ERkjTTYG4B">Discord</a></nav>
+<main id="main">
 
 <div class="wrap">
   <div class="top">
@@ -33,7 +37,8 @@
     <p class="lede">Every update, newest first. FISCHXR updates itself, so you're always on the latest.</p>
   </div>
   <div class="releases">
-<article class="release reveal"><h2>5.4.9<span class="latest">Latest</span></h2><ul><li>Poseidon&#x27;s Lance: its bar is read whole, blue sweet spot included (before, FISCHXR saw only one white end of it and steered the wrong part of the bar), and the fish is kept near the middle, on the blue.</li></ul></article>
+<article class="release reveal"><h2>5.5.0<span class="latest">Latest</span></h2><ul><li>FISCHXR comes as a single FISCHXR.exe from reelworks.pages.dev, with nothing else to install. When a new version is out, the .exe takes you to the download page.</li></ul></article>
+<article class="release reveal"><h2>5.4.9</h2><ul><li>Poseidon&#x27;s Lance: its bar is read whole, blue sweet spot included (before, FISCHXR saw only one white end of it and steered the wrong part of the bar), and the fish is kept near the middle, on the blue.</li></ul></article>
 <article class="release reveal"><h2>5.4.8</h2><ul><li>Bellona&#x27;s Waraxe: each reel on its own mouse button, as the game has it: the left reel on the left button, the right reel on the right button, steered at the same time; the right reel is kept on after the left one ends.</li><li>Luminescent Oath: its bar is followed from white through lavender to deep blue.</li><li>Verdant Oath: the bar is found when a wooden block hangs past either end of the reel, and when it touches an end its green zone decides where it is.</li><li>Cinder Block Rod: its bar fills the reel and never moves, and FISCHXR no longer takes that for scenery and ends the reel.</li></ul></article>
 <article class="release reveal"><h2>5.4.7</h2><ul><li>Apollo&#x27;s Sunshot: its bar is followed when it turns nearly black (the fish outside it). Before, FISCHXR could go blind for seconds while the fish got away.</li></ul></article>
 <article class="release reveal"><h2>5.4.6</h2><ul><li>Bellona&#x27;s Waraxe: both reels are worked. FISCHXR finds the two tracks where they really are on your screen (any resolution), takes turns between the two fish when they can&#x27;t both be kept, and reads both reels in one capture.</li><li>Reel records now show how fast each reel was read (frames a second, and time spent capturing and reading), to tune slower PCs.</li></ul></article>
@@ -44,8 +49,8 @@
 <article class="release reveal"><h2>5.4.0</h2><ul><li>Your profile shows your Discord banner across the top, with your picture over its edge, and your numbers count up when it opens.</li><li>Plus goals: stop fishing after so many catches or so many minutes (on the Fishing page), with a Discord alert when a goal is reached. The stop alert now carries your session summary with catches per hour.</li><li>A taller fishing panel that shows your rod: Pinion&#x27;s Aria&#x27;s notes falling, Noiseform&#x27;s warning colour and the zone it wants, both of Bellona&#x27;s Waraxe reels.</li></ul></article>
 <article class="release reveal"><h2>5.3.1</h2><ul><li>Bellona&#x27;s Waraxe: both of its reels are read. FISCHXR watches the two tracks side by side, keeps both fish under the bar when they fit, follows the nearer one when they don&#x27;t, and carries on with the one that&#x27;s left when the other finishes.</li><li>Rounded buttons everywhere: every button, choice, key, stepper and totem chip is drawn rounded.</li></ul></article>
 <article class="release reveal"><h2>5.3.0</h2><ul><li>Start and stop fishing from Discord with /start and /stop (your macro answers within about 45 seconds).</li><li>Ruinous Oath is followed all the way: its bar turns from white to pink to red as it shrinks, and FISCHXR now knows every shade of it.</li><li>Updates always come from the official FISCHXR GitHub; the update link can no longer be changed.</li></ul></article>
-<article class="release reveal"><h2>5.2.9</h2><ul><li>Noiseform: the bar is measured fresh on every reel. Its width changes from fish to fish, and reusing an earlier reel&#x27;s width could make FISCHXR read part of the green emblem as the bar (and lose the fish).</li><li>Noiseform: a bar reading that doesn&#x27;t move while the mouse is held or let go is ignored (the bar always moves then), and a &quot;fish&quot; that&#x27;s really part of the reel&#x27;s fixed picture is ignored too.</li></ul></article>
     <details class="older"><summary>Older versions</summary>
+<article class="release reveal"><h2>5.2.9</h2><ul><li>Noiseform: the bar is measured fresh on every reel. Its width changes from fish to fish, and reusing an earlier reel&#x27;s width could make FISCHXR read part of the green emblem as the bar (and lose the fish).</li><li>Noiseform: a bar reading that doesn&#x27;t move while the mouse is held or let go is ignored (the bar always moves then), and a &quot;fish&quot; that&#x27;s really part of the reel&#x27;s fixed picture is ignored too.</li></ul></article>
 <article class="release reveal"><h2>5.2.8</h2><ul><li>Noiseform: the bar is found when it&#x27;s pushed against either end of the reel (its outline merges with the reel&#x27;s border there). Before, FISCHXR lost it there, so when a zone warning came it couldn&#x27;t take the bar to the zone.</li></ul></article>
 <article class="release reveal"><h2>5.2.7</h2><ul><li>Noiseform: FISCHXR knows when the reel is over again. 5.2.6 could keep &quot;seeing&quot; a bar in the scenery after the catch; now once the reel&#x27;s track and emblem are gone, nothing there counts as a bar.</li></ul></article>
 <article class="release reveal"><h2>5.2.6</h2><ul><li>Noiseform: FISCHXR now follows the bar when it goes dark (the fish outside it). It learns what the reel looks like behind the bar, the green emblem included, and finds the dark bar as what stands out from that, instead of mistaking the emblem for the bar.</li></ul></article>

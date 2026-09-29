@@ -8,6 +8,7 @@
 | `VERSION` | The version shown under the Download buttons. Change it with each release. |
 | `TRAILER_YT` | A YouTube video ID for the trailer (the part after `v=` in a YouTube link). Empty shows a "Trailer coming soon" frame. |
 | `SITE_URL` | The site's address once it's online. Needed for the picture in Discord link previews. |
+| `TEAM` | The people on the About page: name, role, one line, and optionally a picture (put pictures in `assets/team/`). **Replace the placeholders before going live.** |
 
 After changing any of them, run `python gen_site.py` in this folder to rebuild every page.
 
@@ -25,6 +26,7 @@ Four pages, plain files, no build step. Keep the folder together and double-clic
 | `rods.html` | Every special rod: its render, what's odd about its reel and what FISCHXR does |
 | `features.html` | Totems, Aquarium, Sovereign, Alerts and Reel settings, each with its app screenshot |
 | `changelog.html` | Every update, newest first; older versions fold away |
+| `about.html` | Who makes FISCHXR: the team cards (from `TEAM`), how ReelWorks works, and how to help |
 | `download.html` | The download, centered, with three steps and a note about the Windows warning |
 | `404.html` | Shown for pages that don't exist (Cloudflare Pages and GitHub Pages both use it automatically) |
 
@@ -59,3 +61,7 @@ Any static host works:
 - **Cloudflare Pages:** upload the folder as a Pages project, next to the FISCHXR service you already run there.
 
 Large downloads can also live on GitHub Releases or Cloudflare R2, with the buttons pointing there instead.
+
+## On phones
+
+Below tablet width the menu becomes a button at the top right that opens a full-screen menu. The comparison chart scrolls sideways on narrow phones rather than squeezing, and buttons go full width on the smallest screens.

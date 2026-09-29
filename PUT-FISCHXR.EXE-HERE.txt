@@ -1,0 +1,2 @@
+Put the FISCHXR.exe you want people to download in this folder.
+Every Download button on the site points at download/FISCHXR.exe.
