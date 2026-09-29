@@ -4,7 +4,7 @@ import html, json
 SERVICE = "https://fischxr-api.exoartar.workers.dev"   # your FISCHXR service (live numbers, download counting)
 VERSION = "5.4.9"                                       # shown on the download buttons
 TRAILER_YT = ""                                         # a YouTube video ID for the trailer, e.g. "dQw4w9WgXcQ"; empty = "coming soon"
-SITE_URL = ""                                           # the site's address once it's online, e.g. "https://reelworks.pages.dev" (for link previews)
+SITE_URL = "https://reelworks.pages.dev"                                           # the site's address once it's online, e.g. "https://reelworks.pages.dev" (for link previews)
 
 DL = SERVICE + "/download"                              # counted, then sent on to the file (see the service README)
 DISCORD = "https://discord.gg/ERkjTTYG4B"
