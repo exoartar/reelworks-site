@@ -1,4 +1,13 @@
-import html, json
+import html, json, hashlib
+
+# (the style and script links carry a fingerprint of the files, so browsers
+# always fetch the new ones after an update instead of an old saved copy)
+def _fp(path):
+    try:
+        return hashlib.md5(open(path, "rb").read()).hexdigest()[:10]
+    except OSError:
+        return "0"
+CSS_V, JS_V = _fp("assets/site.css"), _fp("assets/site.js")
 
 # ---- settings: change these, then run  python gen_site.py
 SERVICE = "https://fischxr-api.exoartar.workers.dev"   # your FISCHXR service (live numbers, download counting)
@@ -44,7 +53,7 @@ def head(title, desc, page):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=%s">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -60,7 +69,7 @@ def head(title, desc, page):
 <nav class="mnav" id="mnav" aria-label="Pages">%s<a href="%s">Discord</a></nav>
 <main id="main">
 """ % (title, html.escape(desc), html.escape(title), html.escape(desc),
-       ('<meta property="og:image" content="%s/assets/logo.png">\n' % SITE_URL.rstrip("/")) if SITE_URL else "", nav, DISCORD, nav, DISCORD)
+       ('<meta property="og:image" content="%s/assets/logo.png">\n' % SITE_URL.rstrip("/")) if SITE_URL else "", CSS_V, nav, DISCORD, nav, DISCORD)
 
 FOOT = """</main>
 <footer>
@@ -72,10 +81,10 @@ FOOT = """</main>
     <nav aria-label="Footer links"><a href="rods.html">Rods</a><a href="features.html">Features</a><a href="download.html">Download</a><a href="%s">Discord</a></nav>
   </div>
 </footer>
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=%s"></script>
 </body>
 </html>
-""" % DISCORD
+""" % (DISCORD, JS_V)
 
 def getblock():
     return """<div class="get">
