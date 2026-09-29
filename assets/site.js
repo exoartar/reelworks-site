@@ -4,6 +4,16 @@
   const fine = window.matchMedia('(pointer: fine)').matches;
   const body = document.body;
 
+  // ---------- the phone menu: opens and closes, and closes on a tap or Escape
+  const mb = document.querySelector('.menu-btn'), mnav = document.getElementById('mnav');
+  if (mb && mnav) {
+    const setOpen = (on) => { body.classList.toggle('menu-open', on); mb.setAttribute('aria-expanded', on ? 'true' : 'false'); };
+    mb.addEventListener('click', () => setOpen(!body.classList.contains('menu-open')));
+    mnav.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 900) setOpen(false); });
+  }
+
   // ---------- how far down the page you are
   const bar = document.querySelector('.progress');
   if (bar) {

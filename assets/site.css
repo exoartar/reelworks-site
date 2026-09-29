@@ -325,3 +325,86 @@ details.older .release { opacity: 1; transform: none; }
 
 @media (max-width: 700px) { .release { grid-template-columns: 1fr; gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .livedot, .trailer.soon .play { animation: none; } }
+
+/* ---------- round five: phones, and the About page ---------- */
+.skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--white); color: var(--black); padding: 10px 16px; border-radius: 10px; font-weight: 600; }
+.skip:focus { top: 12px; }
+
+/* the menu button and the full-screen menu (phones and small tablets) */
+.menu-btn { display: none; width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: #0B0B0B; cursor: pointer; position: relative; padding: 0; }
+.menu-btn span { position: absolute; left: 11px; right: 11px; height: 2px; background: var(--white); border-radius: 2px; transition: transform .25s ease, top .25s ease; }
+.menu-btn span:first-child { top: 16px; } .menu-btn span:last-child { top: 24px; }
+body.menu-open .menu-btn span:first-child { top: 20px; transform: rotate(45deg); }
+body.menu-open .menu-btn span:last-child { top: 20px; transform: rotate(-45deg); }
+.mnav { position: fixed; inset: 66px 0 0 0; z-index: 19; background: rgba(0,0,0,.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  display: flex; flex-direction: column; padding: 18px 24px calc(24px + env(safe-area-inset-bottom)); gap: 2px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease, visibility .2s; }
+.mnav a { font-size: 24px; font-weight: 600; letter-spacing: -.02em; padding: 14px 4px; border-bottom: 1px solid var(--line); color: var(--dim); }
+.mnav a[aria-current="page"] { color: var(--white); }
+body.menu-open .mnav { opacity: 1; visibility: visible; transform: none; }
+body.menu-open { overflow: hidden; }
+
+/* the chart keeps its shape and scrolls sideways on narrow phones */
+.chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -24px; padding: 14px 24px 6px; }
+.chart-scroll .chart { min-width: 560px; }
+
+/* About */
+.team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.member { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px 22px 24px; text-align: center; transition: border-color .2s, transform .2s; }
+.member:hover { border-color: var(--c, var(--faint)); transform: translateY(-3px); }
+.member .face { width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 16px; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 45%, #000), #0A0A0A 75%); box-shadow: 0 0 0 2px var(--c), 0 0 26px -8px var(--c); }
+.member .face img { width: 100%; height: 100%; object-fit: cover; }
+.member .initials { font-weight: 800; font-size: 28px; letter-spacing: -.02em; }
+.member h3 { margin: 0 0 4px; font-size: 19px; font-weight: 700; }
+.member .role { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+.member p { margin: 0; color: var(--dim); font-size: 15px; }
+.how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 30px; }
+.how div { border-top: 1px solid var(--line); padding-top: 20px; }
+.how h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; }
+.how p { margin: 0; color: var(--dim); }
+
+/* phones and small tablets */
+@media (max-width: 900px) {
+  .menu-btn { display: inline-block; }
+  .bar .acts { gap: 10px; }
+  .team { grid-template-columns: repeat(2, 1fr); }
+  .how { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (min-width: 901px) { .mnav { display: none; } }
+@media (max-width: 640px) {
+  .wrap { width: calc(100% - 36px); }
+  .bar .wrap { height: 62px; }
+  .mnav { inset: 62px 0 0 0; }
+  .top { padding: 56px 0 6px; }
+  h1 { font-size: clamp(34px, 10vw, 46px); }
+  .lede { font-size: 16px; margin-bottom: 24px; }
+  section { padding-top: 76px; }
+  h2 { font-size: clamp(26px, 8vw, 34px); }
+  .sub { font-size: 16px; }
+  .live { padding: 16px 14px 12px; margin-top: 40px; border-radius: 18px; }
+  canvas#reel { height: 140px; }
+  .shelf { margin-top: 56px; }
+  .shelf a { width: 110px; font-size: 13px; }
+  .shelf a img { height: 150px; }
+  .count { gap: 22px 30px; }
+  .count div { min-width: 40%; }
+  .count b { font-size: 38px; }
+  .maker { padding: 22px 20px; }
+  .feat { gap: 20px; }
+  .trailer { border-radius: 16px; }
+  .rod { padding: 40px 0; }
+  .rod h2 { font-size: 28px; }
+  .rodgrid img { height: 90px; }
+  .release { padding: 22px 0 8px; }
+  footer { margin-top: 80px; }
+  footer .wrap { flex-direction: column; }
+  .chart-scroll { margin: 0 -18px; padding: 14px 18px 6px; }
+}
+@media (max-width: 440px) {
+  .brand small { display: none; }
+  .bar .acts .btn.white { padding: 10px 14px; }
+  .get .row { flex-direction: column; width: 100%; }
+  .get .row .btn { width: 100%; }
+  .team { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .menu-btn span, .mnav, .member { transition: none; } }
