@@ -1,10 +1,10 @@
-// FISCHXR by ReelWorks: the small bits of life on every page.
+// FISCHXR site scripts
 (() => {
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = window.matchMedia('(pointer: fine)').matches;
   const body = document.body;
 
-  // ---------- the phone menu: opens and closes, and closes on a tap or Escape
+  // the phone menu: opens and closes, and closes on a tap or Escape
   const mb = document.querySelector('.menu-btn'), mnav = document.getElementById('mnav');
   if (mb && mnav) {
     const setOpen = (on) => { body.classList.toggle('menu-open', on); mb.setAttribute('aria-expanded', on ? 'true' : 'false'); };
@@ -14,7 +14,7 @@
     window.addEventListener('resize', () => { if (window.innerWidth > 900) setOpen(false); });
   }
 
-  // ---------- how far down the page you are
+  // how far down the page you are
   const bar = document.querySelector('.progress');
   if (bar) {
     const upd = () => {
@@ -26,7 +26,7 @@
     upd();
   }
 
-  // ---------- things ease in as they come into view; numbers count up; grids fill in
+  // things ease in as they come into view; numbers count up; grids fill in
   const countUp = (el) => {
     const to = +el.dataset.to, pre = el.dataset.pre || '';
     if (still || to === 0) { el.textContent = pre + to.toLocaleString(); return; }
@@ -48,24 +48,27 @@
     else io.observe(el);
   });
 
-  // ---------- live numbers from the FISCHXR service (a dash if it can't be reached)
-  const live = document.querySelector('.live-numbers');
-  if (live && live.dataset.service && window.fetch) {
-    const pull = () => fetch(live.dataset.service.replace(/\/$/, '') + '/stats', { cache: 'no-store' })
+  // live numbers from the FISCHXR service (a dash if it can't be reached)
+  const FX = window.FX || {};
+  const liveEls = document.querySelectorAll('b[data-live]');
+  if (liveEls.length && FX.service && window.fetch) {
+    const pick = (o, path) => path.split('.').reduce((v, k) => (v && v[k] !== undefined ? v[k] : undefined), o);
+    const pull = () => fetch(FX.service + '/stats', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((st) => {
         if (!st) return;
-        live.querySelectorAll('b[data-live]').forEach((el) => {
-          const v = Number(st[el.dataset.live]) || 0;
+        liveEls.forEach((el) => {
+          const v = pick(st, el.dataset.live);
+          if (v === undefined || v === null) return;
           if (el.dataset.to === String(v)) return;
-          el.dataset.to = v; countUp(el);
+          el.dataset.to = Number(v) || 0; countUp(el);
         });
       })
       .catch(() => {});
     pull(); setInterval(pull, 60000);
   }
 
-  // ---------- point at a rod: the page takes on a little of its colour
+  // point at a rod: the page takes on a little of its color
   const amb = document.createElement('div'); amb.className = 'ambient'; body.prepend(amb);
   const rgba = (hex, a) => { const n = parseInt(hex.replace('#', ''), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
   let off = 0;
@@ -118,7 +121,7 @@
     })(0);
   }
 
-  // ---------- the reel: Fisch's own look, a new rod after every catch
+  // the reel: Fisch's own look, a new rod after every catch
   const cv = document.getElementById('reel');
   if (!cv) return;
   const ctx = cv.getContext('2d');
@@ -168,7 +171,7 @@
     s.fv += ((s.ft - s.fx) * 5 - s.fv * 3.2) * dt;
     s.fx = Math.min(.98, Math.max(.02, s.fx + s.fv * dt));
     if (bw >= 1) { s.bc = .5; return; }
-    const hold = s.fx > s.bc + s.bv * .28;                     // look ahead, like the macro
+    const hold = s.fx > s.bc + s.bv * .28;                    
     s.bv += (hold ? 1.9 : -1.9) * dt - s.bv * 1.1 * dt;
     s.bc += s.bv * dt;
     const hw = bw / 2;
@@ -338,4 +341,155 @@
   window.addEventListener('resize', () => { size(); draw(); });
   if (rodOut) rodOut.textContent = rod.name;
   if (!still) requestAnimationFrame(frame);
+})();
+
+// accounts: sign in with Discord, the header, leaderboards, the profile
+// User-supplied text is always inserted with textContent, never as HTML.
+(() => {
+  const FX = window.FX || {};
+  const API = 'https://discord.com/api/v10';
+  const store = {
+    get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    del(k) { try { localStorage.removeItem(k); } catch (e) { /* private mode */ } },
+  };
+  const auth = () => { const a = store.get('fx_auth'); return a && a.exp > Date.now() ? a : null; };
+  const signOut = () => { store.del('fx_auth'); store.del('fx_me'); };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const avatarOf = (u) => u.avatar
+    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.${u.avatar.startsWith('a_') ? 'gif' : 'png'}?size=256`
+    : `https://cdn.discordapp.com/embed/avatars/${Number((BigInt(u.id) >> 22n) % 6n)}.png`;
+
+  // OAuth redirect: store the token only if the state matches our request
+  if (location.hash.includes('access_token=')) {
+    const h = new URLSearchParams(location.hash.slice(1));
+    let want = null;
+    try { want = sessionStorage.getItem('fx_state'); sessionStorage.removeItem('fx_state'); } catch (e) { /* private mode */ }
+    if (want && h.get('state') === want) store.set('fx_auth', { token: h.get('access_token'), exp: Date.now() + (Number(h.get('expires_in')) || 3600) * 1000 - 60000 });
+    history.replaceState(null, '', location.pathname);
+  }
+  const signIn = () => {
+    const bytes = new Uint8Array(16); crypto.getRandomValues(bytes);
+    const state = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    try { sessionStorage.setItem('fx_state', state); } catch (e) { /* private mode */ }
+    const back = location.origin + location.pathname.replace(/[^/]*$/, '') + 'profile.html';
+    location.href = 'https://discord.com/oauth2/authorize?' + new URLSearchParams({
+      client_id: FX.client, response_type: 'token', redirect_uri: back, scope: 'identify guilds.members.read', state,
+    });
+  };
+
+  // the header: your picture and name once you're signed in
+  const hdr = document.getElementById('signin'), me = store.get('fx_me');
+  if (hdr && auth() && me) {
+    hdr.textContent = '';
+    const img = el('img'); img.src = me.avatar; img.alt = '';
+    hdr.append(img, el('span', '', me.name));
+    hdr.classList.add('in');
+  }
+
+  // leaderboards (the page's board and the home page's top 5)
+  const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  function renderBoard(list, period) {
+    const limit = Number(list.dataset.limit) || 25;
+    list.textContent = ''; list.append(el('li', 'empty', 'Loading…'));
+    fetch(`${FX.service}/leaderboard?period=${period}`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((b) => {
+        list.textContent = '';
+        const rows = (b.entries || []).slice(0, limit), mine = (store.get('fx_me') || {}).id;
+        if (!rows.length) { list.append(el('li', 'empty', period === 'week' ? 'Nobody on the board yet this week. Start fishing!' : 'Nobody on the board yet. Start fishing!')); return; }
+        for (const r of rows) {
+          const li = el('li', r.id === mine ? 'you' : '');
+          li.append(el('span', 'rank', MEDALS[r.rank] || '#' + r.rank));
+          const img = el('img'); img.src = `${FX.service}/avatar/${r.id}`; img.alt = ''; img.loading = 'lazy'; img.onerror = () => img.remove();
+          li.append(img, el('span', 'who', r.name));
+          if (r.id === mine) li.append(el('span', 'tag', 'You'));
+          li.append(el('span', 'count', Number(r.reels).toLocaleString() + ' reels'));
+          list.append(li);
+        }
+      })
+      .catch(() => { list.textContent = ''; list.append(el('li', 'empty', "The leaderboard couldn't be loaded right now.")); });
+  }
+  document.querySelectorAll('ol.board').forEach((l) => renderBoard(l, l.dataset.period || 'week'));
+  document.querySelectorAll('.tabs button[data-period]').forEach((b, _, all) => b.addEventListener('click', () => {
+    all.forEach((x) => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+    const list = document.getElementById('board');
+    if (list) renderBoard(list, b.dataset.period);
+  }));
+
+  // the profile page
+  const pin = document.getElementById('profile-in'), pout = document.getElementById('profile-out');
+  if (!pin || !pout) return;
+  const btn = document.getElementById('pf-signin');
+  if (btn) btn.addEventListener('click', () => {
+    if (location.protocol === 'file:') { document.getElementById('pf-msg').textContent = 'Signing in works on the website itself, not on a copy opened from your computer.'; return; }
+    signIn();
+  });
+  const a = auth();
+  if (!a) return;
+  const bearer = { headers: { Authorization: 'Bearer ' + a.token } };
+  const get = (url) => fetch(url, bearer).then((r) => (r.status === 200 ? r.json() : r.status === 401 ? Promise.reject('auth') : null)).catch((e) => (e === 'auth' ? Promise.reject(e) : null));
+  Promise.all([get(API + '/users/@me'), get(`${API}/users/@me/guilds/${FX.server}/member`), get(FX.service + '/me?profile=1')])
+    .then(([user, member, svc]) => {
+      if (!user) return Promise.reject('auth');
+      pout.hidden = true; pin.hidden = false;
+      const name = user.global_name || user.username;
+      store.set('fx_me', { id: user.id, name, avatar: avatarOf(user) });
+      // who you are
+      const banner = document.getElementById('pf-banner');
+      if (user.banner) banner.style.backgroundImage = `url("https://cdn.discordapp.com/banners/${user.id}/${user.banner}.${user.banner.startsWith('a_') ? 'gif' : 'png'}?size=600")`;
+      else if (user.accent_color) banner.style.background = `linear-gradient(135deg, #${user.accent_color.toString(16).padStart(6, '0')}, #0B0B0B)`;
+      const av = document.getElementById('pf-avatar'); av.src = avatarOf(user);
+      document.getElementById('pf-name').textContent = name;
+      document.getElementById('pf-user').textContent = '@' + user.username;
+      const plus = svc && (svc.access === 'grant' || (svc.access !== 'revoke' && member && member.premium_since));
+      const badges = document.getElementById('pf-badges');
+      if (plus) badges.append(el('span', 'badge plus', 'FISCHXR Plus'));
+      if (member && member.premium_since) badges.append(el('span', 'badge boost', 'Boosting'));
+      const roles = document.getElementById('pf-roles');
+      (FX.roles || []).forEach(([id, rname, col]) => {
+        if (member && (member.roles || []).includes(id)) { const c = el('span', 'chip', rname); c.style.setProperty('--c', col); roles.append(c); }
+      });
+      const warn = document.getElementById('pf-warn');
+      if (svc && svc.blacklisted) { warn.hidden = false; warn.textContent = "Your account can't sign in to FISCHXR" + (svc.reason ? ': ' + svc.reason : '.'); }
+      else if (!member) { warn.hidden = false; warn.classList.add('soft'); warn.textContent = "You're not in the FISCHXR Discord server, so your roles and boost don't show here. Join it from the menu."; }
+      // your macro
+      const dl = document.getElementById('pf-macro');
+      const row = (k, v) => dl.append(el('dt', '', k), el('dd', '', v));
+      const st = svc && svc.state;
+      if (!svc) row('Status', "Couldn't reach the FISCHXR service. Try again in a minute.");
+      else if (!st) row('Status', "Your macro hasn't reported in yet. Sign in to FISCHXR with Discord in the app.");
+      else {
+        const fresh = st.fishing && Date.now() - (st.at || 0) < 15 * 60000;
+        row('Status', fresh ? 'Fishing now' : 'Not fishing');
+        if (st.rod) row('Rod', st.rod);
+        const newer = (x, y) => { const p = String(x).split('.').map(Number), q = String(y).split('.').map(Number); for (let i = 0; i < 3; i++) if ((p[i] || 0) !== (q[i] || 0)) return (p[i] || 0) > (q[i] || 0); return false; };
+        row('Version', st.version + (newer(FX.version, st.version) ? ` (${FX.version} is out)` : ''));
+        const mins = Math.round((Date.now() - (st.at || 0)) / 60000);
+        row('Last heard from', mins < 1 ? 'just now' : mins < 60 ? mins + ' min ago' : mins < 2880 ? Math.round(mins / 60) + ' h ago' : Math.round(mins / 1440) + ' days ago');
+      }
+      // your reels
+      const lb = (svc && svc.lb) || null;
+      if (lb) {
+        document.getElementById('pf-week').textContent = lb.week.toLocaleString();
+        document.getElementById('pf-all').textContent = lb.total.toLocaleString();
+        document.getElementById('pf-hours').textContent = (lb.secs / 3600).toFixed(lb.secs < 36000 ? 1 : 0);
+        if (lb.hidden) { document.getElementById('pf-week-rank').textContent = 'this week (hidden)'; document.getElementById('pf-all-rank').textContent = 'all time (hidden)'; }
+        else {
+          if (lb.rankWeek) document.getElementById('pf-week-rank').textContent = `this week, #${lb.rankWeek} of ${lb.peopleWeek}`;
+          if (lb.rankAll) document.getElementById('pf-all-rank').textContent = `all time, #${lb.rankAll} of ${lb.peopleAll}`;
+        }
+        const show = document.getElementById('pf-show');
+        show.checked = !lb.hidden;
+        show.addEventListener('change', () => {
+          show.disabled = true;
+          fetch(FX.service + '/me/leaderboard', { method: 'PUT', headers: { Authorization: 'Bearer ' + a.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ hide: !show.checked }) })
+            .then((r) => { if (!r.ok) show.checked = !show.checked; })
+            .catch(() => { show.checked = !show.checked; })
+            .finally(() => { show.disabled = false; });
+        });
+      } else document.getElementById('pf-show').disabled = true;
+      document.getElementById('pf-signout').addEventListener('click', () => { signOut(); location.reload(); });
+    })
+    .catch(() => { signOut(); pout.hidden = false; pin.hidden = true; const m = document.getElementById('pf-msg'); if (m) m.textContent = 'Your sign-in ran out. Sign in again.'; });
 })();

@@ -1,7 +1,6 @@
 import html, json, hashlib
 
-# (the style and script links carry a fingerprint of the files, so browsers
-# always fetch the new ones after an update instead of an old saved copy)
+# Cache-busting: asset links carry a hash of the file contents.
 def _fp(path):
     try:
         return hashlib.md5(open(path, "rb").read()).hexdigest()[:10]
@@ -28,7 +27,7 @@ ROLE_COLOURS = {"ReelWorks": "#FFC940", "Development Lead": "#A970FF", "Lead Tes
 
 DISCORD_CLIENT_ID = "1552771662787903568"              # the FISCHXR Discord app (for "Sign in with Discord")
 DISCORD_SERVER_ID = "1552635887089745982"              # the FISCHXR server (roles and boosts on the profile page)
-# FISCHXR roles shown on profiles: [Discord role id, name, colour] (the same list the macro uses)
+# FISCHXR roles shown on profiles: [Discord role id, name, color] (the same list the macro uses)
 PROFILE_ROLES = [["1552797683012472943", "Macro Developer", "#A970FF"], ["1552797570269712485", "Macro Creator", "#FFC940"],
                  ["1553164118792601690", "Macro Tester", "#3FE0F0"], ["1552813077072715786", "Content Creator", "#FF4FD8"]]
 
@@ -113,17 +112,17 @@ def getblock(live=False):
     </div>""" % (DL, ICON, DISCORD, VERSION, strip)
 
 RODS = [
-  ("noiseform", "Noiseform", "#3FE0A0", "A glowing emblem sits behind the bar, and coloured warnings name a zone to move to.", "FISCHXR reads the warning and takes the bar there."),
-  ("pinion", "Pinion's Aria", "#A98BFF", "Notes fall onto the reel while you reel.", "It catches the notes without losing the fish."),
-  ("verdant", "Verdant Oath", "#6BE04A", "Wooden blocks, a shrinking green zone, and a penalty for touching the wood.", "It keeps the fish in the green, even as the zone shrinks."),
-  ("ruinous", "Ruinous Oath", "#FF4040", "The bar shrinks and turns from white to deep red.", "It follows every shade."),
-  ("luminescent", "Luminescent Oath", "#4F8BFF", "The bar shrinks and turns from white to deep blue.", "It follows every shade."),
-  ("poseidon", "Poseidon's Lance", "#3FA8FF", "A blue sweet spot sits in the middle of the bar.", "It reads the whole bar and keeps the fish on the blue."),
-  ("bellona", "Bellona's Waraxe", "#FF6A3A", "Two reels at once, one on each mouse button.", "It steers both at the same time."),
-  ("apollo", "Apollo's Sunshot", "#FFA640", "The bar turns almost black when the fish slips out.", "It keeps reading the bar through the dark."),
-  ("cinder", "Cinder Block Rod", "#BDBDBD", "The bar fills the whole reel and never moves.", "It just lets the reel run."),
-  ("requiem", "Requiem", "#35D07F", "A reel style of its own.", "Supported, and still being improved."),
-  ("splitbranch", "Splitbranch Twig", "#C79463", "A reel that doesn't behave like the standard one.", "Handled, tested and working."),
+  ("noiseform", "Noiseform", "#3FE0A0", "Has a glowing emblem behind the bar and flashes colored warnings that name a zone. FISCHXR reads the warning and moves the bar to that zone."),
+  ("pinion", "Pinion's Aria", "#A98BFF", "Drops notes onto the reel while you're reeling. FISCHXR catches them without losing the fish."),
+  ("verdant", "Verdant Oath", "#6BE04A", "The bar is wooden blocks around a green zone that shrinks as the reel goes on, and touching the wood costs progress. FISCHXR keeps the fish in the green."),
+  ("ruinous", "Ruinous Oath", "#FF4040", "The bar shrinks and shifts from white to deep red, with slashes hitting it now and then. FISCHXR tracks the bar through every color."),
+  ("luminescent", "Luminescent Oath", "#4F8BFF", "Works like Ruinous Oath, except the bar turns blue."),
+  ("poseidon", "Poseidon's Lance", "#3FA8FF", "Has a blue sweet spot in the middle of the bar. FISCHXR reads the whole bar and keeps the fish on the blue."),
+  ("bellona", "Bellona's Waraxe", "#FF6A3A", "Runs two reels at once, one on each mouse button, and FISCHXR steers both."),
+  ("apollo", "Apollo's Sunshot", "#FFA640", "The bar goes nearly black whenever the fish slips out of it. FISCHXR keeps tracking it anyway."),
+  ("cinder", "Cinder Block Rod", "#BDBDBD", "The bar fills the whole track and never moves, so there's nothing to steer. FISCHXR waits for the reel to finish."),
+  ("requiem", "Requiem", "#35D07F", "Has its own reel style. It's supported, and we're still improving it."),
+  ("splitbranch", "Splitbranch Twig", "#C79463", "Uses a non-standard reel that FISCHXR handles separately. Tested and working."),
 ]
 
 def shelf():
@@ -135,17 +134,16 @@ def shelf():
             out += '    <a href="rods.html#%s" data-c="%s"%s><img src="assets/renders/%s.png" alt="%s" loading="lazy">%s</a>\n' % (rid, col, hide, rid, alt, html.escape(name))
     return out
 
-def rod_article(rid, name, col, a, b):
+def rod_article(rid, name, col, text):
     tag = '<span class="tag">improving</span>' if rid == "requiem" else ""
     return """  <article class="rod reveal" id="%s" data-c="%s">
     <div class="art"><img class="tilt" src="assets/renders/%s.png" alt="%s" loading="lazy"></div>
     <div>
       <h2>%s%s</h2>
       <p>%s</p>
-      <p><b>%s</b></p>
     </div>
   </article>
-""" % (rid, col, rid, html.escape(name), html.escape(name), tag, a, b)
+""" % (rid, col, rid, html.escape(name), html.escape(name), tag, text)
 
 CHECK = '<svg viewBox="0 0 20 20" aria-label="Yes"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 CROSS = '<svg class="no" viewBox="0 0 20 20" aria-label="No"><path d="M5.5 5.5l9 9m0-9l-9 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
@@ -184,7 +182,7 @@ home = head("FISCHXR by ReelWorks, a fishing macro for Fisch", "FISCHXR fishes F
 <div class="wrap">
   <div class="top">
     <canvas id="motes" aria-hidden="true"></canvas>
-    <h1>Press F1. Go do something else.</h1>
+    <h1>Press F1 and go do something else</h1>
     <p class="lede">FISCHXR fishes Fisch for you, <b>special rods included</b>.</p>
     """ + getblock(live=True) + """
     <div class="live" aria-label="A live example of the bar following the fish">
@@ -201,16 +199,16 @@ home = head("FISCHXR by ReelWorks, a fishing macro for Fisch", "FISCHXR fishes F
 
 <div class="wrap">
   <section class="centered reveal">
-    <h2>Every rod, handled.</h2>
-    <p class="sub">Some rods have reels with their own rules. FISCHXR knows them.</p>
+    <h2>Built for special rods</h2>
+    <p class="sub">Several rods have their own reel mechanics. FISCHXR supports them.</p>
     <p style="margin-top:26px"><a class="btn ghost" href="rods.html">See the rods</a></p>
   </section>
 
   <section class="reveal">
     <div class="feat">
       <div class="words">
-        <h3>The chores, too.</h3>
-        <p>Totems, your aquarium, Sovereign, and Discord alerts when something needs you.</p>
+        <h3>More than reeling</h3>
+        <p>It also handles totems, your aquarium and Sovereign, and sends Discord alerts when something needs your attention.</p>
         <p><a class="btn ghost" href="features.html">See the features</a></p>
       </div>
       <img src="assets/app/totems.png" alt="FISCHXR's Totems page" loading="lazy">
@@ -226,18 +224,18 @@ home = head("FISCHXR by ReelWorks, a fishing macro for Fisch", "FISCHXR fishes F
   </section>
 
   <section class="centered reveal">
-    <h2>See it fish.</h2>
-    <p class="sub" style="margin-bottom:34px">A minute of FISCHXR doing the work.</p>
+    <h2>Trailer</h2>
+    <p class="sub" style="margin-bottom:34px">A minute of FISCHXR fishing on its own.</p>
     """ + trailer() + """
   </section>
 
   <section class="reveal">
-    <div class="lbhead"><div><h2>Top anglers this week.</h2><p class="sub">Reels with FISCHXR since Monday.</p></div><a class="btn ghost" href="leaderboard.html">Full leaderboard</a></div>
+    <div class="lbhead"><div><h2>Top anglers this week</h2><p class="sub">Reels with FISCHXR since Monday.</p></div><a class="btn ghost" href="leaderboard.html">Full leaderboard</a></div>
     <ol class="board mini" id="board-mini" data-period="week" data-limit="5"><li class="empty">Loading&hellip;</li></ol>
   </section>
 
   <section id="plus" class="centered reveal plus-sec">
-    <h2>Free, or <span class="pink">Plus</span>.</h2>
+    <h2>Free and <span class="pink">Plus</span></h2>
     <p class="sub">Everything that fishes is free. Boost the Discord for a few extras.</p>
     """ + compare() + """
   </section>
@@ -250,8 +248,8 @@ home = head("FISCHXR by ReelWorks, a fishing macro for Fisch", "FISCHXR fishes F
   </section>
 
   <section class="centered reveal">
-    <h2>Ready?</h2>
-    <p class="sub" style="margin-bottom:28px">One file. A couple of minutes.</p>
+    <h2>Get FISCHXR</h2>
+    <p class="sub" style="margin-bottom:28px">One file, and setup takes a couple of minutes.</p>
     """ + getblock() + """
   </section>
 </div>
@@ -260,7 +258,7 @@ home = head("FISCHXR by ReelWorks, a fishing macro for Fisch", "FISCHXR fishes F
 rods = head("Rods | FISCHXR by ReelWorks", "The rods FISCHXR handles, and what's different about each one's reel.", "rods") + """
 <div class="wrap">
   <div class="top">
-    <h1>The rods it knows.</h1>
+    <h1>Supported rods</h1>
     <p class="lede">Standard rods just work. These have reels of their own.</p>
   </div>
   <div class="rodgrid stagger">
@@ -268,25 +266,25 @@ rods = head("Rods | FISCHXR by ReelWorks", "The rods FISCHXR handles, and what's
 </div>
 <div class="wrap" style="margin-top:80px">
 """ + "".join(rod_article(*r) for r in RODS) + """  <section class="centered reveal" style="padding-top:60px">
-    <h2>Missing a rod?</h2>
-    <p class="sub" style="margin-bottom:26px">Send us a clip of a few reels in the Discord.</p>
+    <h2>Don't see your rod?</h2>
+    <p class="sub" style="margin-bottom:26px">Send us a recording of a few reels in the Discord and we'll look at adding it.</p>
     <a class="btn ghost big" href=\"""" + DISCORD + """\">Join the Discord</a>
   </section>
 </div>
 """ + FOOT
 
 FEATS = [
-  ("totems", "Totems", "Totems, on schedule.", "Add the totems you own and when to use them. It uses them between catches."),
-  ("aquarium", "Aquarium", "Your aquarium, fed.", "Choose how often, how much food and how many buys. It goes and comes back between catches."),
-  ("sovereign", "Sovereign", "Sovereign, charged.", "Recharged with plain Enchant Relics every so many reels. Mutated relics are never used."),
-  ("alerts", "Alerts", "Discord, when it matters.", "Problems, disconnects, starts and stops, and an hourly summary. <kbd>/start</kbd> and <kbd>/stop</kbd> work from your phone."),
-  ("reel", "Reel", "Tune it, or don't.", "Control style, latency, braking and look-ahead are there if you want them. Otherwise it works it out."),
+  ("totems", "Totems", "Totems", "Add the totems you own and set when each one should be used. FISCHXR uses them between catches."),
+  ("aquarium", "Aquarium", "Aquarium", "Set how often to feed it, how much food to use and how many to buy per visit. FISCHXR makes the trip between catches."),
+  ("sovereign", "Sovereign", "Sovereign recharging", "Recharges Sovereign with plain Enchant Relics every set number of reels. Mutated relics are never used."),
+  ("alerts", "Alerts", "Discord alerts", "Sends messages to your Discord channel for problems, disconnects, starts and stops, plus an hourly summary. <kbd>/start</kbd> and <kbd>/stop</kbd> work from your phone."),
+  ("reel", "Reel", "Reel settings", "Control style, latency, braking and look-ahead can all be adjusted. The defaults work well for most people."),
 ]
 feats = head("Features | FISCHXR by ReelWorks", "Everything FISCHXR does around the fishing: totems, aquarium, Sovereign, Discord alerts and more.", "features") + """
 <div class="wrap">
   <div class="top">
-    <h1>Everything around the fishing.</h1>
-    <p class="lede">The things you'd otherwise stay at your PC for.</p>
+    <h1>Features</h1>
+    <p class="lede">Everything FISCHXR does besides reeling.</p>
   </div>
 """ + "".join("""  <section class="reveal">
     <div class="feat%s">
@@ -296,7 +294,7 @@ feats = head("Features | FISCHXR by ReelWorks", "Everything FISCHXR does around 
   </section>
 """ % (" flip" if k % 2 else "", t, p, img, label) for k, (img, label, t, p) in enumerate(FEATS)) + """  <section class="reveal">
     <div class="maker">
-      <p><b>And the rest.</b> It rejoins if Roblox kicks you and keeps itself up to date. Boosters get Plus: goals that stop fishing and ping you.</p>
+      <p><b>Also included:</b> it rejoins if Roblox disconnects you and lets you know about updates. Server boosters get Plus, which adds fishing goals that stop the macro and ping you when they're reached.</p>
       <a class="btn ghost" href="download.html">Get FISCHXR</a>
     </div>
   </section>
@@ -330,7 +328,7 @@ for name, text in (("index.html", home), ("rods.html", rods), ("features.html", 
 open("download/PUT-FISCHXR.EXE-HERE.txt", "w").write("Put the FISCHXR.exe you want people to download in this folder.\nEvery Download button on the site points at download/FISCHXR.exe.\n")
 print("pages written")
 
-CHANGELOG = json.loads(r'''[{"v": "5.6.0", "items": ["Leaderboards: when you're signed in with Discord, your reels count toward the weekly and all-time FISCHXR leaderboards on reelworks.pages.dev and in the Discord bot (/leaderboard). Don't want to be on them? Use /leaderboard-visibility in Discord, or the switch on your profile page on the website.", "While fishing, FISCHXR tells the FISCHXR service how it's doing every 10 minutes, so the website's live numbers and the leaderboards stay current."]}, {"v": "5.5.0", "items": ["FISCHXR comes as a single FISCHXR.exe from reelworks.pages.dev, with nothing else to install. When a new version is out, the .exe takes you to the download page."]}, {"v": "5.4.9", "items": ["Poseidon's Lance: its bar is read whole, blue sweet spot included (before, FISCHXR saw only one white end of it and steered the wrong part of the bar), and the fish is kept near the middle, on the blue."]}, {"v": "5.4.8", "items": ["Bellona's Waraxe: each reel on its own mouse button, as the game has it: the left reel on the left button, the right reel on the right button, steered at the same time; the right reel is kept on after the left one ends.", "Luminescent Oath: its bar is followed from white through lavender to deep blue.", "Verdant Oath: the bar is found when a wooden block hangs past either end of the reel, and when it touches an end its green zone decides where it is.", "Cinder Block Rod: its bar fills the reel and never moves, and FISCHXR no longer takes that for scenery and ends the reel."]}, {"v": "5.4.7", "items": ["Apollo's Sunshot: its bar is followed when it turns nearly black (the fish outside it). Before, FISCHXR could go blind for seconds while the fish got away."]}, {"v": "5.4.6", "items": ["Bellona's Waraxe: both reels are worked. FISCHXR finds the two tracks where they really are on your screen (any resolution), takes turns between the two fish when they can't both be kept, and reads both reels in one capture.", "Reel records now show how fast each reel was read (frames a second, and time spent capturing and reading), to tune slower PCs."]}, {"v": "5.4.5", "items": ["Apollo's Sunshot: its bar is followed in its dark look too (the fish outside it). Before, FISCHXR lost the bar then and could end the reel early.", "Starting to fish closes any open dialog, so an update prompt can't sit over the game while you fish; it's asked again when you stop."]}, {"v": "5.4.4", "items": ["Settings has an \"Open snapshots folder\" button: your saved snapshots and reel records, one click away."]}, {"v": "5.4.3", "items": ["Verdant Oath: FISCHXR follows its bar as it grows in and shrinks during the reel. Before, it took the bar's size from the first moments of the reel and then ignored most of the real bar as \"the wrong size\", steering blind for much of each reel."]}, {"v": "5.4.1", "items": ["Display names in fancy Unicode letters show properly on your profile."]}, {"v": "5.4.0", "items": ["Your profile shows your Discord banner across the top, with your picture over its edge, and your numbers count up when it opens.", "Plus goals: stop fishing after so many catches or so many minutes (on the Fishing page), with a Discord alert when a goal is reached. The stop alert now carries your session summary with catches per hour.", "A taller fishing panel that shows your rod: Pinion's Aria's notes falling, Noiseform's warning colour and the zone it wants, both of Bellona's Waraxe reels."]}, {"v": "5.3.1", "items": ["Bellona's Waraxe: both of its reels are read. FISCHXR watches the two tracks side by side, keeps both fish under the bar when they fit, follows the nearer one when they don't, and carries on with the one that's left when the other finishes.", "Rounded buttons everywhere: every button, choice, key, stepper and totem chip is drawn rounded."]}, {"v": "5.3.0", "items": ["Start and stop fishing from Discord with /start and /stop (your macro answers within about 45 seconds).", "Ruinous Oath is followed all the way: its bar turns from white to pink to red as it shrinks, and FISCHXR now knows every shade of it.", "Updates always come from the official FISCHXR GitHub; the update link can no longer be changed."]}, {"v": "5.2.9", "items": ["Noiseform: the bar is measured fresh on every reel. Its width changes from fish to fish, and reusing an earlier reel's width could make FISCHXR read part of the green emblem as the bar (and lose the fish).", "Noiseform: a bar reading that doesn't move while the mouse is held or let go is ignored (the bar always moves then), and a \"fish\" that's really part of the reel's fixed picture is ignored too."]}, {"v": "5.2.8", "items": ["Noiseform: the bar is found when it's pushed against either end of the reel (its outline merges with the reel's border there). Before, FISCHXR lost it there, so when a zone warning came it couldn't take the bar to the zone."]}, {"v": "5.2.7", "items": ["Noiseform: FISCHXR knows when the reel is over again. 5.2.6 could keep \"seeing\" a bar in the scenery after the catch; now once the reel's track and emblem are gone, nothing there counts as a bar."]}, {"v": "5.2.6", "items": ["Noiseform: FISCHXR now follows the bar when it goes dark (the fish outside it). It learns what the reel looks like behind the bar, the green emblem included, and finds the dark bar as what stands out from that, instead of mistaking the emblem for the bar."]}, {"v": "5.2.5", "items": ["Noiseform: the bar's own outline is no longer mistaken for the fish. With a rod's bright effects beside it, the macro could chase its own bar to the end of the track."]}, {"v": "5.2.4", "items": ["The profile's picture, cards and buttons, and the reel gauges, are sized right on screens with display scaling (125%, 150%...): no more small cards or blurry buttons."]}, {"v": "5.2.3", "items": ["Your profile shows your Discord picture again, and your FISCHXR roles (Macro Developer, Macro Creator, Macro Tester, Content Creator).", "The profile's cards and buttons are properly rounded now.", "The reel gauges no longer leave stray marks behind as the bar and fish move."]}, {"v": "5.2.2", "items": ["Your rod is read again every time you start fishing, so a rod you swapped while stopped is picked up straight away. (A rod typed on the Rods page still takes priority.)"]}, {"v": "5.2.1", "items": ["Fast fish are followed instead of lost. When the fish slipped out of the bar, FISCHXR could mistake a stretch of empty track for it and steer the wrong way; now only something fish-sized counts, and it finds the real fish even over the dark track.", "A reel isn't given up on while the bar is still there, even when it's tinted and covering the track's edge.", "Fixed FISCHXR stopping with \"Something went wrong\" after two bad reels in a row."]}, {"v": "5.2.0", "items": ["FISCHXR knows every reel starts with the bar and the fish in the middle. Something that looks like a reel but isn't centred is ignored, and early wrong readings of the fish are no longer believed straight away.", "The reel style can no longer drift to another rod's reel (like a standard rod being read as Noiseform). A style is only switched for a rod whose name isn't known, and only after it fits two reels in a row."]}, {"v": "5.1.9", "items": ["The standard reel keeps track of the bar when it turns red (the fish has slipped out of it), so FISCHXR keeps steering back to the fish instead of losing it."]}, {"v": "5.1.8", "items": ["Catches aren't called early any more. On Noiseform, Pinion's Aria, Requiem, Verdant Oath and Apollo's Sunshot, the fish keeps the reel going while the bar is hard to see (at night, in a zone), and FISCHXR takes one more look before casting, so it never casts over a reel that's still going.", "Your rod is always read from your rod key's slot, even when another slot is highlighted or the hotbar is a different size on your screen."]}, {"v": "5.1.7", "items": ["The boost check no longer depends on the FISCHXR invite link."]}, {"v": "5.1.6", "items": ["The FISCHXR team can now lock a version of FISCHXR to a Discord role (for test builds and early access). If your version is locked and you don't have the role, FISCHXR tells you so, and opens by itself as soon as you get it."]}, {"v": "5.1.5", "items": ["Rounded buttons all through FISCHXR.", "Your profile is now a full page: click your name in the sidebar, and Back takes you where you were.", "Pop-up windows and the fishing panel stay where they open.", "After a reconnect, FISCHXR clicks through Fisch's loading screen before it starts fishing again."]}, {"v": "5.1.4", "items": ["Your profile! Click your name in the sidebar to see your Discord picture, name and username, your Plus status, this session's and all-time fishing, and when your Discord account was made. Log out lives there now.", "The top-left corner shows the new FISCHXR logo.", "A blacklisted account now sees a proper blacklist screen saying why, instead of FISCHXR. If the blacklist is lifted, FISCHXR opens signed in on its own."]}, {"v": "5.1.3", "items": ["Totems are safer. If a totem's hotbar key opens a menu instead (say, the Equipment Bag after you've rearranged your hotbar), FISCHXR closes it without clicking, goes back to your rod and tells you to check that key. Before, its click could equip a different rod.", "FISCHXR re-reads your rod after every job and every 15 casts, so a swapped rod is picked up straight away."]}, {"v": "5.1.2", "items": ["Your rod is read correctly on any screen size. FISCHXR now finds the hotbar slot you're holding by its highlight, instead of guessing where slots sit, which could be a whole slot off on 1080p and other screens.", "Small rod names are enlarged more before they're read, so they're read more reliably."]}, {"v": "5.1.1", "items": ["Plus: your catches per hour always show on the fishing panel."]}, {"v": "5.1.0", "items": ["Change your macro's settings right from Discord! Use /settings set in the FISCHXR server and your macro picks it up within a couple of minutes. /settings show and /status tell you how it's doing.", "The FISCHXR team can now give or take Plus, and keep an account from signing in."]}, {"v": "5.0.0", "items": ["Introducing FISCHXR Plus, a thank-you for everyone boosting the FISCHXR Discord server! Sign in with Discord and Plus switches on by itself.", "Plus fishing extras: quick recast, your catch rate on the fishing panel, and a choice of corner for the panel.", "Plus members see \"FISCHXR - PLUS\" across the top.", "Already signed in? Sign in once more so FISCHXR can see you're boosting."]}, {"v": "4.9.6", "items": ["Splitbranch Twig catches are way more reliable. After you pick a fish, its reel waits for a click before it starts (\"Click & Hold Anywhere!\"). FISCHXR now gives it that click right away and won't give up on the reel while it warms up.", "The Splitbranch choice timer is followed all the way down, even as it turns yellow, orange and red."]}, {"v": "4.9.5", "items": ["Splitbranch Twig: FISCHXR now waits for the two-fish choice to finish before it starts reeling, and tries the left fish, then the right, if a click doesn't land.", "After a choice, FISCHXR reels with the mouse clear of the fish you picked, so the clicks actually reach the reel."]}, {"v": "4.9.4", "items": ["FISCHXR now checks which rod you're holding before the first cast, so it knows which reel to expect right from the start.", "Noiseform got a big upgrade: the fish is spotted much more reliably, especially at night and when it's outside the bar.", "New rod: Splitbranch Twig, \"Choose one!\" pick included."]}, {"v": "4.9.3", "items": ["FISCHXR now fixes itself when fishing goes wrong. Two bad reels in a row? It relearns the reel from scratch. A reel it doesn't recognize? It tries every style until one fits. Stuck for two minutes? It resets and re-equips your rod.", "A job that can't finish (like the aquarium) no longer stops you fishing. It simply tries again in 10 minutes.", "The small fishing panel is solid again instead of see-through.", "The new FISCHXR logo is now on your taskbar and tray."]}, {"v": "4.9.2", "items": ["The \"Sign in to use\" panel no longer hides under the sidebar."]}, {"v": "4.9.1", "items": ["The sign-in buttons work properly now.", "Totems are free for everyone, guests included.", "You can type your rod's name on the Rods page, and typos are fine: \"inions air\" becomes Pinion's Aria.", "Rod names read from your hotbar get the same auto-correct."]}, {"v": "4.8.1", "items": ["The sign-in screen now comes first. Pick Discord or guest and you're in."]}, {"v": "4.8.0", "items": ["Sign in with Discord! Signing in unlocks everything and brings you into the FISCHXR Discord server.", "Guests can still fish. Discord alerts, auto-reconnect, the aquarium, totems and Sovereign need a sign-in.", "Your sign-in is remembered securely, and you can sign out any time."]}, {"v": "4.7.0", "items": ["Everything feels smoother: sliding switches, pages that glide in, buttons that fade on hover, and a status dot that breathes while you fish.", "Soft shadows give the window more depth.", "Prefer less movement? Turn on Reduce motion."]}, {"v": "4.6.1", "items": ["The sidebar is snappy again."]}, {"v": "4.6.0", "items": ["A fresh look: the sidebar is now a slim strip of icons that opens when you hover over it.", "New rod: Apollo's Sunshot.", "Bars that grow or shrink mid-reel are followed properly instead of ending the reel early.", "What's new now scrolls."]}, {"v": "4.5.3", "items": ["When the fish hugs either end, the bar now holds it there instead of bouncing off.", "Verdant Oath keeps track of the bar at both ends and through the red flash."]}, {"v": "4.5.2", "items": ["Verdant Oath now aims the fish right at the middle of the green zone."]}, {"v": "4.5.1", "items": ["Requiem: FISCHXR goes easy on the inputs, so the line doesn't snap."]}, {"v": "4.5.0", "items": ["New rod: Requiem."]}, {"v": "4.4.9", "items": ["Pinion's Aria without a skin: the bright red bar is recognized.", "Steadier steering for every rod: no more lurching after a bad reading, and the bar stays calm while the fish is safely inside."]}, {"v": "4.4.8", "items": ["Pinion's Aria without a skin now works.", "Pinion's Aria's bar is followed as it grows and shrinks with the notes."]}, {"v": "4.4.7", "items": ["Pinion's Aria: notes are spotted about a second before they land, so the bar is ready for them."]}, {"v": "4.4.6", "items": ["Pinion's Aria: the bar keeps the fish and still heads over to catch notes in time."]}, {"v": "4.4.5", "items": ["Noiseform and Pinion's Aria reels no longer end early, and dock planks aren't mistaken for a reel."]}, {"v": "4.4.4", "items": ["Pinion's Aria: the red bar is recognized, and the \u6c34 symbol is no longer mistaken for the fish."]}, {"v": "4.4.3", "items": ["Noiseform works at night."]}, {"v": "4.4.2", "items": ["After a Noiseform zone or a Pinion's Aria note, the bar heads straight back to the fish."]}, {"v": "4.4.1", "items": ["Noiseform zones no longer throw off where the bar is."]}, {"v": "4.4.0", "items": ["Noiseform zones: FISCHXR reads the warning in the middle of the screen and moves the bar to the right zone before the beam hits."]}, {"v": "4.3.1", "items": ["Noiseform is found wherever your reel area sits. If a reel isn't recognized, the Detection log explains why."]}, {"v": "4.3.0", "items": ["Pinion's Aria: the bar catches falling notes while keeping the fish.", "FISCHXR reads the rod in your hotbar to pick the right reel style."]}, {"v": "4.2.3", "items": ["Check for updates now tells you what it found, and hover help is back on every page."]}, {"v": "4.2.2", "items": ["Updates now come straight from the FISCHXR GitHub page. FISCHXR checks when it opens and asks before installing."]}, {"v": "4.2.1", "items": ["Noiseform keeps working when its bar goes dark."]}, {"v": "4.2.0", "items": ["We're FISCHXR now! Your settings carry over.", "FISCHXR reads the rod in your hotbar and uses its reel style automatically.", "Verdant Oath aims the fish at the green zone."]}, {"v": "4.1.0", "items": ["A fresh new look, with tabs down the side and a smaller window.", "A small panel in the corner shows what's happening while you fish, with a Stop button.", "Simpler pages, with fine-tuning tucked away under Advanced.", "Sovereign recharge types into the inventory search the way a person would.", "FISCHXR can now update itself."]}]''')
+CHANGELOG = json.loads(r'''[{"v": "5.6.0", "items": ["Leaderboards: when you're signed in with Discord, your reels count toward the weekly and all-time FISCHXR leaderboards on reelworks.pages.dev and in the Discord bot (/leaderboard). Don't want to be on them? Use /leaderboard-visibility in Discord, or the switch on your profile page on the website.", "While fishing, FISCHXR tells the FISCHXR service how it's doing every 10 minutes, so the website's live numbers and the leaderboards stay current."]}, {"v": "5.5.0", "items": ["FISCHXR comes as a single FISCHXR.exe from reelworks.pages.dev, with nothing else to install. When a new version is out, the .exe takes you to the download page."]}, {"v": "5.4.9", "items": ["Poseidon's Lance: its bar is read whole, blue sweet spot included (before, FISCHXR saw only one white end of it and steered the wrong part of the bar), and the fish is kept near the middle, on the blue."]}, {"v": "5.4.8", "items": ["Bellona's Waraxe: each reel on its own mouse button, as the game has it: the left reel on the left button, the right reel on the right button, steered at the same time; the right reel is kept on after the left one ends.", "Luminescent Oath: its bar is followed from white through lavender to deep blue.", "Verdant Oath: the bar is found when a wooden block hangs past either end of the reel, and when it touches an end its green zone decides where it is.", "Cinder Block Rod: its bar fills the reel and never moves, and FISCHXR no longer takes that for scenery and ends the reel."]}, {"v": "5.4.7", "items": ["Apollo's Sunshot: its bar is followed when it turns nearly black (the fish outside it). Before, FISCHXR could go blind for seconds while the fish got away."]}, {"v": "5.4.6", "items": ["Bellona's Waraxe: both reels are worked. FISCHXR finds the two tracks where they really are on your screen (any resolution), takes turns between the two fish when they can't both be kept, and reads both reels in one capture.", "Reel records now show how fast each reel was read (frames a second, and time spent capturing and reading), to tune slower PCs."]}, {"v": "5.4.5", "items": ["Apollo's Sunshot: its bar is followed in its dark look too (the fish outside it). Before, FISCHXR lost the bar then and could end the reel early.", "Starting to fish closes any open dialog, so an update prompt can't sit over the game while you fish; it's asked again when you stop."]}, {"v": "5.4.4", "items": ["Settings has an \"Open snapshots folder\" button: your saved snapshots and reel records, one click away."]}, {"v": "5.4.3", "items": ["Verdant Oath: FISCHXR follows its bar as it grows in and shrinks during the reel. Before, it took the bar's size from the first moments of the reel and then ignored most of the real bar as \"the wrong size\", steering blind for much of each reel."]}, {"v": "5.4.1", "items": ["Display names in fancy Unicode letters show properly on your profile."]}, {"v": "5.4.0", "items": ["Your profile shows your Discord banner across the top, with your picture over its edge, and your numbers count up when it opens.", "Plus goals: stop fishing after so many catches or so many minutes (on the Fishing page), with a Discord alert when a goal is reached. The stop alert now carries your session summary with catches per hour.", "A taller fishing panel that shows your rod: Pinion's Aria's notes falling, Noiseform's warning color and the zone it wants, both of Bellona's Waraxe reels."]}, {"v": "5.3.1", "items": ["Bellona's Waraxe: both of its reels are read. FISCHXR watches the two tracks side by side, keeps both fish under the bar when they fit, follows the nearer one when they don't, and carries on with the one that's left when the other finishes.", "Rounded buttons everywhere: every button, choice, key, stepper and totem chip is drawn rounded."]}, {"v": "5.3.0", "items": ["Start and stop fishing from Discord with /start and /stop (your macro answers within about 45 seconds).", "Ruinous Oath is followed all the way: its bar turns from white to pink to red as it shrinks, and FISCHXR now knows every shade of it.", "Updates always come from the official FISCHXR GitHub; the update link can no longer be changed."]}, {"v": "5.2.9", "items": ["Noiseform: the bar is measured fresh on every reel. Its width changes from fish to fish, and reusing an earlier reel's width could make FISCHXR read part of the green emblem as the bar (and lose the fish).", "Noiseform: a bar reading that doesn't move while the mouse is held or let go is ignored (the bar always moves then), and a \"fish\" that's really part of the reel's fixed picture is ignored too."]}, {"v": "5.2.8", "items": ["Noiseform: the bar is found when it's pushed against either end of the reel (its outline merges with the reel's border there). Before, FISCHXR lost it there, so when a zone warning came it couldn't take the bar to the zone."]}, {"v": "5.2.7", "items": ["Noiseform: FISCHXR knows when the reel is over again. 5.2.6 could keep \"seeing\" a bar in the scenery after the catch; now once the reel's track and emblem are gone, nothing there counts as a bar."]}, {"v": "5.2.6", "items": ["Noiseform: FISCHXR now follows the bar when it goes dark (the fish outside it). It learns what the reel looks like behind the bar, the green emblem included, and finds the dark bar as what stands out from that, instead of mistaking the emblem for the bar."]}, {"v": "5.2.5", "items": ["Noiseform: the bar's own outline is no longer mistaken for the fish. With a rod's bright effects beside it, the macro could chase its own bar to the end of the track."]}, {"v": "5.2.4", "items": ["The profile's picture, cards and buttons, and the reel gauges, are sized right on screens with display scaling (125%, 150%...): no more small cards or blurry buttons."]}, {"v": "5.2.3", "items": ["Your profile shows your Discord picture again, and your FISCHXR roles (Macro Developer, Macro Creator, Macro Tester, Content Creator).", "The profile's cards and buttons are properly rounded now.", "The reel gauges no longer leave stray marks behind as the bar and fish move."]}, {"v": "5.2.2", "items": ["Your rod is read again every time you start fishing, so a rod you swapped while stopped is picked up straight away. (A rod typed on the Rods page still takes priority.)"]}, {"v": "5.2.1", "items": ["Fast fish are followed instead of lost. When the fish slipped out of the bar, FISCHXR could mistake a stretch of empty track for it and steer the wrong way; now only something fish-sized counts, and it finds the real fish even over the dark track.", "A reel isn't given up on while the bar is still there, even when it's tinted and covering the track's edge.", "Fixed FISCHXR stopping with \"Something went wrong\" after two bad reels in a row."]}, {"v": "5.2.0", "items": ["FISCHXR knows every reel starts with the bar and the fish in the middle. Something that looks like a reel but isn't centred is ignored, and early wrong readings of the fish are no longer believed straight away.", "The reel style can no longer drift to another rod's reel (like a standard rod being read as Noiseform). A style is only switched for a rod whose name isn't known, and only after it fits two reels in a row."]}, {"v": "5.1.9", "items": ["The standard reel keeps track of the bar when it turns red (the fish has slipped out of it), so FISCHXR keeps steering back to the fish instead of losing it."]}, {"v": "5.1.8", "items": ["Catches aren't called early any more. On Noiseform, Pinion's Aria, Requiem, Verdant Oath and Apollo's Sunshot, the fish keeps the reel going while the bar is hard to see (at night, in a zone), and FISCHXR takes one more look before casting, so it never casts over a reel that's still going.", "Your rod is always read from your rod key's slot, even when another slot is highlighted or the hotbar is a different size on your screen."]}, {"v": "5.1.7", "items": ["The boost check no longer depends on the FISCHXR invite link."]}, {"v": "5.1.6", "items": ["The FISCHXR team can now lock a version of FISCHXR to a Discord role (for test builds and early access). If your version is locked and you don't have the role, FISCHXR tells you so, and opens by itself as soon as you get it."]}, {"v": "5.1.5", "items": ["Rounded buttons all through FISCHXR.", "Your profile is now a full page: click your name in the sidebar, and Back takes you where you were.", "Pop-up windows and the fishing panel stay where they open.", "After a reconnect, FISCHXR clicks through Fisch's loading screen before it starts fishing again."]}, {"v": "5.1.4", "items": ["Your profile! Click your name in the sidebar to see your Discord picture, name and username, your Plus status, this session's and all-time fishing, and when your Discord account was made. Log out lives there now.", "The top-left corner shows the new FISCHXR logo.", "A blacklisted account now sees a proper blacklist screen saying why, instead of FISCHXR. If the blacklist is lifted, FISCHXR opens signed in on its own."]}, {"v": "5.1.3", "items": ["Totems are safer. If a totem's hotbar key opens a menu instead (say, the Equipment Bag after you've rearranged your hotbar), FISCHXR closes it without clicking, goes back to your rod and tells you to check that key. Before, its click could equip a different rod.", "FISCHXR re-reads your rod after every job and every 15 casts, so a swapped rod is picked up straight away."]}, {"v": "5.1.2", "items": ["Your rod is read correctly on any screen size. FISCHXR now finds the hotbar slot you're holding by its highlight, instead of guessing where slots sit, which could be a whole slot off on 1080p and other screens.", "Small rod names are enlarged more before they're read, so they're read more reliably."]}, {"v": "5.1.1", "items": ["Plus: your catches per hour always show on the fishing panel."]}, {"v": "5.1.0", "items": ["Change your macro's settings right from Discord! Use /settings set in the FISCHXR server and your macro picks it up within a couple of minutes. /settings show and /status tell you how it's doing.", "The FISCHXR team can now give or take Plus, and keep an account from signing in."]}, {"v": "5.0.0", "items": ["Introducing FISCHXR Plus, a thank-you for everyone boosting the FISCHXR Discord server! Sign in with Discord and Plus switches on by itself.", "Plus fishing extras: quick recast, your catch rate on the fishing panel, and a choice of corner for the panel.", "Plus members see \"FISCHXR - PLUS\" across the top.", "Already signed in? Sign in once more so FISCHXR can see you're boosting."]}, {"v": "4.9.6", "items": ["Splitbranch Twig catches are way more reliable. After you pick a fish, its reel waits for a click before it starts (\"Click & Hold Anywhere!\"). FISCHXR now gives it that click right away and won't give up on the reel while it warms up.", "The Splitbranch choice timer is followed all the way down, even as it turns yellow, orange and red."]}, {"v": "4.9.5", "items": ["Splitbranch Twig: FISCHXR now waits for the two-fish choice to finish before it starts reeling, and tries the left fish, then the right, if a click doesn't land.", "After a choice, FISCHXR reels with the mouse clear of the fish you picked, so the clicks actually reach the reel."]}, {"v": "4.9.4", "items": ["FISCHXR now checks which rod you're holding before the first cast, so it knows which reel to expect right from the start.", "Noiseform got a big upgrade: the fish is spotted much more reliably, especially at night and when it's outside the bar.", "New rod: Splitbranch Twig, \"Choose one!\" pick included."]}, {"v": "4.9.3", "items": ["FISCHXR now fixes itself when fishing goes wrong. Two bad reels in a row? It relearns the reel from scratch. A reel it doesn't recognize? It tries every style until one fits. Stuck for two minutes? It resets and re-equips your rod.", "A job that can't finish (like the aquarium) no longer stops you fishing. It simply tries again in 10 minutes.", "The small fishing panel is solid again instead of see-through.", "The new FISCHXR logo is now on your taskbar and tray."]}, {"v": "4.9.2", "items": ["The \"Sign in to use\" panel no longer hides under the sidebar."]}, {"v": "4.9.1", "items": ["The sign-in buttons work properly now.", "Totems are free for everyone, guests included.", "You can type your rod's name on the Rods page, and typos are fine: \"inions air\" becomes Pinion's Aria.", "Rod names read from your hotbar get the same auto-correct."]}, {"v": "4.8.1", "items": ["The sign-in screen now comes first. Pick Discord or guest and you're in."]}, {"v": "4.8.0", "items": ["Sign in with Discord! Signing in unlocks everything and brings you into the FISCHXR Discord server.", "Guests can still fish. Discord alerts, auto-reconnect, the aquarium, totems and Sovereign need a sign-in.", "Your sign-in is remembered securely, and you can sign out any time."]}, {"v": "4.7.0", "items": ["Everything feels smoother: sliding switches, pages that glide in, buttons that fade on hover, and a status dot that breathes while you fish.", "Soft shadows give the window more depth.", "Prefer less movement? Turn on Reduce motion."]}, {"v": "4.6.1", "items": ["The sidebar is snappy again."]}, {"v": "4.6.0", "items": ["A fresh look: the sidebar is now a slim strip of icons that opens when you hover over it.", "New rod: Apollo's Sunshot.", "Bars that grow or shrink mid-reel are followed properly instead of ending the reel early.", "What's new now scrolls."]}, {"v": "4.5.3", "items": ["When the fish hugs either end, the bar now holds it there instead of bouncing off.", "Verdant Oath keeps track of the bar at both ends and through the red flash."]}, {"v": "4.5.2", "items": ["Verdant Oath now aims the fish right at the middle of the green zone."]}, {"v": "4.5.1", "items": ["Requiem: FISCHXR goes easy on the inputs, so the line doesn't snap."]}, {"v": "4.5.0", "items": ["New rod: Requiem."]}, {"v": "4.4.9", "items": ["Pinion's Aria without a skin: the bright red bar is recognized.", "Steadier steering for every rod: no more lurching after a bad reading, and the bar stays calm while the fish is safely inside."]}, {"v": "4.4.8", "items": ["Pinion's Aria without a skin now works.", "Pinion's Aria's bar is followed as it grows and shrinks with the notes."]}, {"v": "4.4.7", "items": ["Pinion's Aria: notes are spotted about a second before they land, so the bar is ready for them."]}, {"v": "4.4.6", "items": ["Pinion's Aria: the bar keeps the fish and still heads over to catch notes in time."]}, {"v": "4.4.5", "items": ["Noiseform and Pinion's Aria reels no longer end early, and dock planks aren't mistaken for a reel."]}, {"v": "4.4.4", "items": ["Pinion's Aria: the red bar is recognized, and the \u6c34 symbol is no longer mistaken for the fish."]}, {"v": "4.4.3", "items": ["Noiseform works at night."]}, {"v": "4.4.2", "items": ["After a Noiseform zone or a Pinion's Aria note, the bar heads straight back to the fish."]}, {"v": "4.4.1", "items": ["Noiseform zones no longer throw off where the bar is."]}, {"v": "4.4.0", "items": ["Noiseform zones: FISCHXR reads the warning in the middle of the screen and moves the bar to the right zone before the beam hits."]}, {"v": "4.3.1", "items": ["Noiseform is found wherever your reel area sits. If a reel isn't recognized, the Detection log explains why."]}, {"v": "4.3.0", "items": ["Pinion's Aria: the bar catches falling notes while keeping the fish.", "FISCHXR reads the rod in your hotbar to pick the right reel style."]}, {"v": "4.2.3", "items": ["Check for updates now tells you what it found, and hover help is back on every page."]}, {"v": "4.2.2", "items": ["Updates now come straight from the FISCHXR GitHub page. FISCHXR checks when it opens and asks before installing."]}, {"v": "4.2.1", "items": ["Noiseform keeps working when its bar goes dark."]}, {"v": "4.2.0", "items": ["We're FISCHXR now! Your settings carry over.", "FISCHXR reads the rod in your hotbar and uses its reel style automatically.", "Verdant Oath aims the fish at the green zone."]}, {"v": "4.1.0", "items": ["A fresh new look, with tabs down the side and a smaller window.", "A small panel in the corner shows what's happening while you fish, with a Stop button.", "Simpler pages, with fine-tuning tucked away under Advanced.", "Sovereign recharge types into the inventory search the way a person would.", "FISCHXR can now update itself."]}]''')
 
 def changelog_page():
     def entry(e, i):
@@ -342,8 +340,8 @@ def changelog_page():
     return head("Changelog | FISCHXR by ReelWorks", "Every FISCHXR update, newest first.", "changelog") + """
 <div class="wrap">
   <div class="top">
-    <h1>What's changed.</h1>
-    <p class="lede">Every update, newest first. FISCHXR updates itself, so you're always on the latest.</p>
+    <h1>Changelog</h1>
+    <p class="lede">Every update, newest first. FISCHXR tells you in the app when a new version is out.</p>
   </div>
   <div class="releases">
 """ + recent + """    <details class="older"><summary>Older versions</summary>
@@ -356,8 +354,8 @@ open("changelog.html", "w", encoding="utf-8").write(changelog_page())
 open("404.html", "w", encoding="utf-8").write(head("Not found | FISCHXR by ReelWorks", "This page doesn't exist.", "") + """
 <div class="wrap">
   <div class="top">
-    <h1>Nothing caught here.</h1>
-    <p class="lede">That page doesn't exist. It may have moved.</p>
+    <h1>Page not found</h1>
+    <p class="lede">That page doesn't exist or has moved.</p>
     <div class="get"><div class="row"><a class="btn white big" href="index.html">Back home</a><a class="btn ghost big" href="rods.html">See the rods</a></div></div>
   </div>
 </div>
@@ -388,7 +386,7 @@ def about_page():
     return head("About | FISCHXR by ReelWorks", "ReelWorks is the team behind FISCHXR.", "about") + """
 <div class="wrap">
   <div class="top">
-    <h1>Who makes FISCHXR.</h1>
+    <h1>The team</h1>
     <p class="lede"><b>ReelWorks</b> builds and looks after FISCHXR: the macro, its Discord bot and this site.</p>
   </div>
 
@@ -397,7 +395,7 @@ def about_page():
   </section>
 
   <section class="reveal">
-    <h2>How we work.</h2>
+    <h2>How we work</h2>
     <div class="how">
       <div><h3>Your clips become support</h3><p>Most rods FISCHXR handles were added the same way: someone sent us a recording of the reel, and we taught FISCHXR how it works.</p></div>
       <div><h3>Tested before it ships</h3><p>Every release runs through over two hundred automated checks, and our testers fish with it before you do.</p></div>
@@ -421,7 +419,7 @@ def leaderboard_page():
     return head("Leaderboard | FISCHXR by ReelWorks", "Who's reeled in the most with FISCHXR, this week and all time.", "leaderboard") + """
 <div class="wrap">
   <div class="top">
-    <h1>Leaderboard.</h1>
+    <h1>Leaderboard</h1>
     <p class="lede">Reels with FISCHXR, counted since the leaderboards began. Weeks start on Monday (UTC).</p>
   </div>
   <div class="tabs" role="tablist" aria-label="Period">
@@ -438,7 +436,7 @@ def profile_page():
 <div class="wrap">
   <div id="profile-out" class="pf-out">
     <div class="top">
-      <h1>Your FISCHXR.</h1>
+      <h1>Your profile</h1>
       <p class="lede">Sign in with Discord to see your macro, your Plus, your reels and where you rank.</p>
       <div class="get"><button type="button" class="btn big discordbtn" id="pf-signin">Sign in with Discord</button>
         <p class="fine" id="pf-msg">We only ask Discord who you are and your roles in the FISCHXR server.</p></div>

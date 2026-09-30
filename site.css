@@ -1,4 +1,4 @@
-/* FISCHXR by ReelWorks: the shared look for every page */
+/* FISCHXR site styles */
 :root {
   --black: #000; --panel: #0B0B0B; --line: #1E1E1E; --white: #FFF; --dim: #9A9A9A; --faint: #616161;
   --sea: #3FE0C8;
@@ -148,13 +148,13 @@ footer .by { color: var(--white); font-weight: 600; margin: 0; }
   .btn, .shelf a img, .rodgrid a { transition: none; }
 }
 
-/* ---------- round two: a wider header, colour from the rods, more life ---------- */
+/* Header layout and rod hover effects */
 .bar .wrap { display: grid; grid-template-columns: 1fr auto 1fr; height: 72px; gap: 20px; }
 .bar nav { margin: 0; gap: 10px; justify-self: center; }
 .bar nav a { padding: 8px 16px; }
 .bar .acts { justify-self: end; display: flex; align-items: center; gap: 24px; }
 
-/* the page takes on the colour of whatever rod you point at */
+/* the page takes on the color of whatever rod you point at */
 .ambient { position: fixed; inset: 0; pointer-events: none; z-index: -2; opacity: 0; transition: opacity .7s ease;
   background: radial-gradient(1000px 680px at var(--gx, 50%) var(--gy, 45%), var(--glowa, rgba(63,224,200,.16)), transparent 70%); }
 body.lit .ambient { opacity: 1; }
@@ -163,7 +163,7 @@ body.lit .ambient { opacity: 1; }
   background: radial-gradient(closest-side, rgba(255,255,255,.028), transparent); transform: translate3d(-999px, -999px, 0); }
 #motes { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-/* things with a colour glow in it when you point at them */
+/* things with a color glow in it when you point at them */
 .shelf a:hover img { filter: drop-shadow(0 0 12px var(--c, #3FE0C8)); }
 .rodgrid a:hover { border-color: var(--c, var(--faint)); box-shadow: 0 0 26px -14px var(--c, transparent); }
 .tilt { transition: transform .25s ease, filter .35s ease; will-change: transform; }
@@ -217,7 +217,7 @@ body.lit .ambient { opacity: 1; }
   .ambient, .tilt { transition: none; }
 }
 
-/* ---------- round three: Plus in pink, and a few more touches ---------- */
+/* Plus section and small effects */
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .live .head .rod-now { color: var(--dim); margin-left: 8px; font-weight: 400; }
 
@@ -294,7 +294,7 @@ body.lit .ambient { opacity: 1; }
   .bar nav a::after { transition: none; }
 }
 
-/* ---------- round four: live numbers, the trailer, the changelog ---------- */
+/* Live numbers, trailer, changelog */
 .livedot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3FE08A; margin-right: 7px; vertical-align: 1px; animation: ping 2s infinite; }
 .live-numbers b { min-width: 2ch; }
 
@@ -326,7 +326,7 @@ details.older .release { opacity: 1; transform: none; }
 @media (max-width: 700px) { .release { grid-template-columns: 1fr; gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .livedot, .trailer.soon .play { animation: none; } }
 
-/* ---------- round five: phones, and the About page ---------- */
+/* Mobile menu, responsive layout, About page */
 .skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--white); color: var(--black); padding: 10px 16px; border-radius: 10px; font-weight: 600; }
 .skip:focus { top: 12px; }
 
@@ -409,7 +409,7 @@ body.menu-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) { .menu-btn span, .mnav, .member { transition: none; } }
 
-/* ---------- the team, as a hierarchy ---------- */
+/* Team hierarchy */
 .tree { display: flex; flex-direction: column; align-items: center; }
 .tier { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 .tree .link { width: 2px; height: 46px; background: linear-gradient(var(--a), var(--b)); opacity: .7; position: relative; }
@@ -431,3 +431,90 @@ body.menu-open { overflow: hidden; }
 .member.lv2 .face { width: 92px; height: 92px; }
 .member:not(.lv1):not(.lv2) .face { width: 76px; height: 76px; }
 @media (max-width: 440px) { .member, .member.lv1, .member.lv2 { width: 100%; } }
+
+/* Accounts, live strip, leaderboards, profile */
+.signin { display: inline-flex; align-items: center; gap: 8px; color: var(--dim); font-size: 15px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; transition: color .15s, border-color .15s; white-space: nowrap; }
+.signin:hover { color: var(--white); border-color: var(--faint); }
+.signin.in { padding: 4px 12px 4px 4px; color: var(--white); }
+.signin img { width: 26px; height: 26px; border-radius: 50%; }
+.signin span { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+.livestrip { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+.livestrip span { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--dim); font-size: 14px; background: rgba(255,255,255,.02); }
+.livestrip b { color: var(--white); font-weight: 700; font-variant-numeric: tabular-nums; }
+.livestrip .livedot { margin: 0; }
+
+.lbhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 26px; }
+.tabs { display: flex; justify-content: center; gap: 6px; margin: 10px 0 26px; }
+.tabs button { all: unset; cursor: pointer; padding: 10px 18px; border-radius: 999px; color: var(--dim); border: 1px solid var(--line); font-weight: 500; transition: color .15s, background-color .15s; }
+.tabs button[aria-selected="true"] { color: var(--black); background: var(--white); border-color: var(--white); }
+.tabs button:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+.board { list-style: none; padding: 0; margin: 0 auto; max-width: 760px; }
+.board li { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); margin-bottom: 8px; transition: border-color .2s, transform .2s; }
+.board li:hover { border-color: #2A2A2A; transform: translateX(3px); }
+.board li:nth-child(1) { border-color: rgba(255,201,64,.45); box-shadow: 0 0 36px -18px #FFC940; }
+.board li:nth-child(2) { border-color: rgba(200,200,210,.35); }
+.board li:nth-child(3) { border-color: rgba(205,127,50,.4); }
+.board li.you { border-color: var(--sea); background: linear-gradient(90deg, rgba(63,224,200,.08), var(--panel) 60%); }
+.board li.empty { justify-content: center; color: var(--dim); border-style: dashed; }
+.board .rank { width: 42px; text-align: center; font-weight: 700; color: var(--dim); font-size: 18px; font-variant-numeric: tabular-nums; }
+.board img { width: 38px; height: 38px; border-radius: 50%; background: #151515; flex: none; }
+.board .who { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board .tag { font-size: 12px; font-weight: 700; color: var(--black); background: var(--sea); padding: 2px 8px; border-radius: 999px; }
+.board .count { color: var(--dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board.mini { max-width: none; }
+.boardnote { text-align: center; color: var(--faint); font-size: 14px; margin: 26px auto 0; max-width: 60ch; }
+.boardnote a { color: var(--dim); border-bottom: 1px solid var(--line); }
+
+.discordbtn { background: #5865F2; color: #fff; border-color: #5865F2; font-weight: 600; }
+.discordbtn:hover { background: #4752C4; border-color: #4752C4; }
+.pf-in { padding-top: 56px; }
+.pf-card { border: 1px solid var(--line); border-radius: 24px; overflow: hidden; background: var(--panel); }
+.pf-banner { height: 170px; background: linear-gradient(135deg, #1B3B6F, #0B0B0B); background-size: cover; background-position: center; }
+.pf-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px; padding: 0 28px; margin-top: -54px; }
+.pf-avatar { width: 116px; height: 116px; border-radius: 50%; border: 6px solid var(--panel); background: #151515; }
+.pf-names { flex: 1; min-width: 200px; padding-bottom: 6px; }
+.pf-names h1 { font-size: 30px; margin: 0; letter-spacing: -.03em; text-align: left; max-width: none; }
+.pf-names p { margin: 2px 0 0; color: var(--dim); }
+.pf-badges { display: flex; gap: 8px; padding-bottom: 12px; }
+.badge.plus { background: #FF4FD8; color: #fff; padding: 5px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: 0 0 18px rgba(255,79,216,.5); }
+.badge.boost { border: 1px solid #FF73FA; color: #FF73FA; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.pf-roles { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 28px 24px; }
+.pf-roles .chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; background: #121212; border: 1px solid var(--line); font-size: 14px; }
+.pf-roles .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.pf-warn { margin: 0 28px 24px; padding: 12px 16px; border-radius: 12px; border: 1px solid #5A1F1F; background: #1A0B0B; color: #FF9A9A; }
+.pf-warn.soft { border-color: var(--line); background: #0F0F0F; color: var(--dim); }
+.pf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.pf-box { border: 1px solid var(--line); border-radius: 20px; padding: 24px 26px; background: var(--panel); }
+.pf-box h3 { margin: 0 0 14px; font-size: 15px; color: var(--dim); font-weight: 600; }
+.pf-box dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; margin: 0; }
+.pf-box dt { color: var(--dim); }
+.pf-box dd { margin: 0; font-weight: 500; }
+.pf-nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pf-nums b { display: block; font-size: 34px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.pf-nums span { color: var(--dim); font-size: 13px; }
+.pf-settings { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 14px; }
+.switch { display: inline-flex; align-items: center; gap: 12px; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch span { width: 46px; height: 26px; border-radius: 999px; background: #2A2A2A; position: relative; transition: background-color .2s; flex: none; }
+.switch span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.switch input:checked + span { background: var(--sea); }
+.switch input:checked + span::after { transform: translateX(20px); }
+.switch input:focus-visible + span { outline: 2px solid var(--white); outline-offset: 3px; }
+.switch input:disabled + span { opacity: .5; }
+
+@media (max-width: 900px) { .pf-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .signin span { display: none; }
+  .signin:not(.in) { padding: 6px 10px; }
+  .pf-banner { height: 120px; }
+  .pf-head { padding: 0 18px; margin-top: -44px; }
+  .pf-avatar { width: 92px; height: 92px; }
+  .pf-names h1 { font-size: 24px; }
+  .pf-roles { padding: 14px 18px 20px; }
+  .pf-nums b { font-size: 26px; }
+  .board li { padding: 12px; gap: 10px; }
+  .board .rank { width: 30px; font-size: 15px; }
+}
+@media (max-width: 440px) { .bar .acts .signin:not(.in) { display: none; } }
+@media (prefers-reduced-motion: reduce) { .board li, .switch span, .switch span::after, .signin { transition: none; } }
