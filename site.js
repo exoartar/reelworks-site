@@ -389,7 +389,33 @@
 
   // leaderboards (the page's board and the home page's top 5)
   const MEDALS = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  // the rarest catches (by their 1-in-N odds)
+  function renderRare(list, period) {
+    list.textContent = ''; list.append(el('li', 'empty', 'Loading…'));
+    fetch(`${FX.service}/catches?period=${period}`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((b) => {
+        list.textContent = '';
+        const rows = b.entries || [], mine = (store.get('fx_me') || {}).id;
+        if (!rows.length) { list.append(el('li', 'empty', 'No rare catches yet' + (period === 'week' ? ' this week.' : '.') + ' They show up once FISCHXR reads a catch of 1 in 100 or rarer.')); return; }
+        for (const r of rows) {
+          const li = el('li', r.id === mine ? 'you' : '');
+          li.append(el('span', 'rank', MEDALS[r.rank] || '#' + r.rank));
+          const img = el('img'); img.src = `${FX.service}/avatar/${r.id}`; img.alt = ''; img.loading = 'lazy'; img.onerror = () => img.remove();
+          const who = el('span', 'who');
+          who.append(el('b', '', r.fish), el('small', '', r.name + (r.rod ? ', ' + r.rod : '')));
+          li.append(img, who);
+          if (r.id === mine) li.append(el('span', 'tag', 'You'));
+          const right = el('span', 'count');
+          right.append(el('b', 'odds', '1 in ' + Number(r.odds).toLocaleString()), el('small', '', Number(r.kg).toLocaleString() + ' kg'));
+          li.append(right);
+          list.append(li);
+        }
+      })
+      .catch(() => { list.textContent = ''; list.append(el('li', 'empty', "The rarest catches couldn't be loaded right now.")); });
+  }
   function renderBoard(list, period) {
+    if (period.startsWith('rare-')) return renderRare(list, period.slice(5));
     const limit = Number(list.dataset.limit) || 25;
     list.textContent = ''; list.append(el('li', 'empty', 'Loading…'));
     fetch(`${FX.service}/leaderboard?period=${period}`, { cache: 'no-store' })
@@ -479,6 +505,32 @@
           if (lb.rankWeek) document.getElementById('pf-week-rank').textContent = `this week, #${lb.rankWeek} of ${lb.peopleWeek}`;
           if (lb.rankAll) document.getElementById('pf-all-rank').textContent = `all time, #${lb.rankAll} of ${lb.peopleAll}`;
         }
+        // milestones: lifetime reels and hours fished
+        const TIER = ['#CD7F32', '#C9CCD6', '#FFC940', '#3FE08A', '#4F8BFF', '#A970FF', '#FF4FD8'];
+        const REELS = [100, 1000, 5000, 10000, 25000, 50000, 100000], HOURS = [10, 50, 100, 250, 500, 1000];
+        const life = lb.lifetime || 0, hrs = (lb.secs || 0) / 3600;
+        const msBox = document.getElementById('pf-ms'), nextBox = document.getElementById('pf-ms-next');
+        const badge = (label, sub, got, i) => {
+          const b = el('div', 'ms' + (got ? ' got' : ''));
+          b.style.setProperty('--t', TIER[i]);
+          b.append(el('b', '', label), el('span', '', sub));
+          b.title = got ? 'Earned' : 'Not yet';
+          return b;
+        };
+        REELS.forEach((m, i) => msBox.append(badge(m >= 1000 ? m / 1000 + 'k' : String(m), 'reels', life >= m, i)));
+        HOURS.forEach((m, i) => msBox.append(badge(m >= 1000 ? m / 1000 + 'k' : String(m), 'hours', hrs >= m, i)));
+        const next = (val, list, unit) => {
+          const m = list.find((x) => val < x);
+          if (!m) return;
+          const row = el('div', 'ms-row');
+          row.append(el('span', '', `Next: ${m.toLocaleString()} ${unit}`));
+          const track = el('div', 'ms-bar'), fill = el('i');
+          fill.style.width = Math.min(100, (val / m) * 100).toFixed(1) + '%';
+          track.append(fill);
+          row.append(track, el('span', 'ms-of', `${Math.floor(val).toLocaleString()} / ${m.toLocaleString()}`));
+          nextBox.append(row);
+        };
+        next(life, REELS, 'reels'); next(hrs, HOURS, 'hours');
         const show = document.getElementById('pf-show');
         show.checked = !lb.hidden;
         show.addEventListener('change', () => {
@@ -489,6 +541,20 @@
             .finally(() => { show.disabled = false; });
         });
       } else document.getElementById('pf-show').disabled = true;
+      // best catches, and whether catch DMs are on
+      const best = document.getElementById('pf-best'), bests = (svc && svc.best) || [];
+      if (!bests.length) best.append(el('li', 'empty', 'No rare catches yet. They show up once FISCHXR 5.7.0 or later reads a catch of 1 in 100 or rarer.'));
+      bests.forEach((c, i) => {
+        const li = el('li');
+        li.append(el('span', 'rank', MEDALS[i + 1] || '#' + (i + 1)));
+        const what = el('span', 'who'); what.append(el('b', '', c.fish), el('small', '', new Date(c.at).toLocaleDateString() + (c.rod ? ', ' + c.rod : '')));
+        const right = el('span', 'count'); right.append(el('b', 'odds', '1 in ' + Number(c.odds).toLocaleString()), el('small', '', Number(c.kg).toLocaleString() + ' kg'));
+        li.append(what, right);
+        best.append(li);
+      });
+      if (svc) document.getElementById('pf-alerts').textContent = svc.alertMin
+        ? `Catch DMs: on, for 1 in ${Number(svc.alertMin).toLocaleString()} or rarer. Change it with /catch-alerts in Discord.`
+        : 'Catch DMs: off. Turn them on with /catch-alerts in Discord.';
       document.getElementById('pf-signout').addEventListener('click', () => { signOut(); location.reload(); });
     })
     .catch(() => { signOut(); pout.hidden = false; pin.hidden = true; const m = document.getElementById('pf-msg'); if (m) m.textContent = 'Your sign-in ran out. Sign in again.'; });
