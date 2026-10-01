@@ -496,12 +496,12 @@ body.menu-open { overflow: hidden; }
 .pf-settings { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 14px; }
 .switch { display: inline-flex; align-items: center; gap: 12px; cursor: pointer; }
 .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.switch span { width: 46px; height: 26px; border-radius: 999px; background: #2A2A2A; position: relative; transition: background-color .2s; flex: none; }
-.switch span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s; }
-.switch input:checked + span { background: var(--sea); }
-.switch input:checked + span::after { transform: translateX(20px); }
-.switch input:focus-visible + span { outline: 2px solid var(--white); outline-offset: 3px; }
-.switch input:disabled + span { opacity: .5; }
+.switch .track { width: 46px; height: 26px; border-radius: 999px; background: #2A2A2A; position: relative; transition: background-color .2s; flex: none; }
+.switch .track::after { content: ""; position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.switch input:checked + .track { background: var(--sea); }
+.switch input:checked + .track::after { transform: translateX(20px); }
+.switch input:focus-visible + .track { outline: 2px solid var(--white); outline-offset: 3px; }
+.switch input:disabled + .track { opacity: .5; }
 
 @media (max-width: 900px) { .pf-grid { grid-template-columns: 1fr; } }
 @media (max-width: 640px) {
@@ -517,7 +517,7 @@ body.menu-open { overflow: hidden; }
   .board .rank { width: 30px; font-size: 15px; }
 }
 @media (max-width: 440px) { .bar .acts .signin:not(.in) { display: none; } }
-@media (prefers-reduced-motion: reduce) { .board li, .switch span, .switch span::after, .signin { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .board li, .switch .track, .switch .track::after, .signin { transition: none; } }
 
 /* Profile milestones */
 .pf-ms { margin-top: 14px; }
@@ -539,8 +539,8 @@ body.menu-open { overflow: hidden; }
 .tabs { flex-wrap: wrap; }
 .board .who b, .best .who b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .board .who small, .best .who small { display: block; color: var(--dim); font-size: 13px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
-.board .count b, .best .count b { display: block; color: var(--white); text-align: right; }
-.board .count small, .best .count small { display: block; text-align: right; font-size: 13px; }
+.board .count b, .best .odds-wrap b { display: block; color: var(--white); text-align: right; }
+.board .count small, .best .odds-wrap small { display: block; text-align: right; font-size: 13px; }
 .board .odds, .best .odds { color: #C9A8FF; }
 .pf-best { margin-top: 14px; }
 .best { list-style: none; padding: 0; margin: 0; }
@@ -549,19 +549,19 @@ body.menu-open { overflow: hidden; }
 .best li.empty { color: var(--dim); }
 .best .rank { width: 32px; text-align: center; font-weight: 700; color: var(--dim); }
 .best .who { flex: 1; min-width: 0; }
-.best .count { color: var(--dim); white-space: nowrap; }
+.best .odds-wrap { color: var(--dim); white-space: nowrap; }
 .pf-alerts { margin: 14px 0 0; color: var(--dim); font-size: 14px; }
 
 /* Profile themes: the profile area takes its theme's colors */
 .pf-themed { --pf-bg: #000; --pf-panel: #161616; --pf-line: #303030; --pf-text: #FFF; --pf-dim: #8C8C8C; --pf-accent: #3FE0C8; }
 .pf-themed .pf-card, .pf-themed .pf-box { background: var(--pf-bg); border-color: var(--pf-line); color: var(--pf-text); }
-.pf-themed .pf-box h3, .pf-themed .pf-names p, .pf-themed .pf-nums span, .pf-themed .pf-box dt, .pf-themed .ms span, .pf-themed .best .who small, .pf-themed .best .count, .pf-themed .pf-alerts, .pf-themed .ms-row { color: var(--pf-dim); }
+.pf-themed .pf-box h3, .pf-themed .pf-names p, .pf-themed .pf-nums span, .pf-themed .pf-box dt, .pf-themed .ms span, .pf-themed .best .who small, .pf-themed .best .odds-wrap, .pf-themed .pf-alerts, .pf-themed .ms-row { color: var(--pf-dim); }
 .pf-themed .pf-avatar { border-color: var(--pf-bg); }
 .pf-themed .pf-roles .chip, .pf-themed .ms { background: var(--pf-panel); border-color: var(--pf-line); }
 .pf-themed .best li { border-color: var(--pf-line); }
-.pf-themed .best .count b, .pf-themed .best .who b { color: var(--pf-text); }
+.pf-themed .best .odds-wrap b, .pf-themed .best .who b { color: var(--pf-text); }
 .pf-themed .ms-bar i { background: linear-gradient(90deg, var(--pf-accent), color-mix(in srgb, var(--pf-accent) 55%, #fff)); }
-.pf-themed .switch input:checked + span { background: var(--pf-accent); }
+.pf-themed .switch input:checked + .track { background: var(--pf-accent); }
 .pf-banner { position: relative; }
 .pf-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .pf-bio { margin: 10px 28px 0; color: var(--pf-text); white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -620,3 +620,44 @@ body.menu-open { overflow: hidden; }
   .rowlink { padding: 12px; gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .pf-card.border::after, .pf-names h1.fx { animation: none; } }
+
+/* Profile polish: whole banners, milestone rails, compact best catches */
+.pf-banner { height: 200px; overflow: hidden; background-color: var(--pf-bg, #0B0B0B); }
+.pf-banner .bn-blur, .pf-banner .bn-img { position: absolute; display: none; pointer-events: none; }
+.pf-banner.bn-photo .bn-blur { display: block; inset: -40px; background: var(--bn) center / cover no-repeat; filter: blur(28px) brightness(.55) saturate(1.25); }
+.pf-banner.bn-photo .bn-img { display: block; inset: 0; background: var(--bn) center / contain no-repeat; }
+.pf-banner.bn-scene .bn-img { display: block; inset: 0; background: var(--bn) right center / auto 100% no-repeat; }
+.pf-grid2 { grid-template-columns: 1fr 1.35fr; }
+.mt + .mt { margin-top: 22px; }
+.mt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.mt-label { color: var(--pf-dim, var(--dim)); font-size: 14px; }
+.mt-val { font-size: 18px; font-weight: 700; color: var(--pf-text, #fff); font-variant-numeric: tabular-nums; }
+.mt-rail { position: relative; height: 6px; margin: 16px 10px 30px 0; border-radius: 999px; background: var(--pf-panel, #1A1A1A); }
+.mt-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--pf-accent, #3FE0C8) 60%, transparent), var(--pf-accent, #3FE0C8));
+  box-shadow: 0 0 14px -2px var(--pf-accent, #3FE0C8); }
+.mt-node { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--pf-bg, #000); border: 2px solid var(--pf-line, #333); transition: transform .2s; }
+.mt-node.got { background: var(--t); border-color: var(--t); box-shadow: 0 0 10px var(--t); }
+.mt-node:hover { transform: scale(1.25); }
+.mt-node small { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--pf-dim, var(--dim)); white-space: nowrap; }
+.mt-node.got small { color: var(--pf-text, #fff); font-weight: 600; }
+.mt-next { margin: 0; font-size: 13px; color: var(--pf-dim, var(--dim)); }
+.best li { padding: 9px 0; gap: 12px; }
+.best .rank { width: 24px; font-size: 16px; }
+.best .fish { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--pf-text, #fff); }
+.best .odds-wrap { display: flex; align-items: baseline; gap: 10px; }
+.best .odds-wrap b, .best .odds-wrap small { display: inline; text-align: right; }
+.best .odds-wrap small { color: var(--pf-dim, var(--dim)); font-size: 13px; }
+@media (max-width: 900px) { .pf-grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .pf-banner { height: 140px; } }
+@media (prefers-reduced-motion: reduce) { .mt-node { transition: none; } }
+.pu-fishing { margin: 0; display: grid; gap: 4px; }
+.pu-fishing b { font-size: 22px; font-weight: 700; color: var(--pf-text, #fff); }
+.pu-fishing span { color: var(--pf-dim, var(--dim)); }
+
+/* Fixes: milestone rails at full width; the profile header above the banner */
+.pf-ms .ms-badges { display: block; }
+.pf-head { position: relative; z-index: 2; }
+.pf-grid2 { align-items: start; }
+.mt-head { flex-wrap: nowrap; }
+.mt-val { white-space: nowrap; }
