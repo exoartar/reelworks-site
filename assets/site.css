@@ -1,4 +1,4 @@
-/* FISCHXR by ReelWorks: the shared look for every page */
+/* FISCHXR site styles */
 :root {
   --black: #000; --panel: #0B0B0B; --line: #1E1E1E; --white: #FFF; --dim: #9A9A9A; --faint: #616161;
   --sea: #3FE0C8;
@@ -148,13 +148,13 @@ footer .by { color: var(--white); font-weight: 600; margin: 0; }
   .btn, .shelf a img, .rodgrid a { transition: none; }
 }
 
-/* ---------- round two: a wider header, colour from the rods, more life ---------- */
+/* Header layout and rod hover effects */
 .bar .wrap { display: grid; grid-template-columns: 1fr auto 1fr; height: 72px; gap: 20px; }
 .bar nav { margin: 0; gap: 10px; justify-self: center; }
 .bar nav a { padding: 8px 16px; }
 .bar .acts { justify-self: end; display: flex; align-items: center; gap: 24px; }
 
-/* the page takes on the colour of whatever rod you point at */
+/* the page takes on the color of whatever rod you point at */
 .ambient { position: fixed; inset: 0; pointer-events: none; z-index: -2; opacity: 0; transition: opacity .7s ease;
   background: radial-gradient(1000px 680px at var(--gx, 50%) var(--gy, 45%), var(--glowa, rgba(63,224,200,.16)), transparent 70%); }
 body.lit .ambient { opacity: 1; }
@@ -163,7 +163,7 @@ body.lit .ambient { opacity: 1; }
   background: radial-gradient(closest-side, rgba(255,255,255,.028), transparent); transform: translate3d(-999px, -999px, 0); }
 #motes { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 
-/* things with a colour glow in it when you point at them */
+/* things with a color glow in it when you point at them */
 .shelf a:hover img { filter: drop-shadow(0 0 12px var(--c, #3FE0C8)); }
 .rodgrid a:hover { border-color: var(--c, var(--faint)); box-shadow: 0 0 26px -14px var(--c, transparent); }
 .tilt { transition: transform .25s ease, filter .35s ease; will-change: transform; }
@@ -217,7 +217,7 @@ body.lit .ambient { opacity: 1; }
   .ambient, .tilt { transition: none; }
 }
 
-/* ---------- round three: Plus in pink, and a few more touches ---------- */
+/* Plus section and small effects */
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .live .head .rod-now { color: var(--dim); margin-left: 8px; font-weight: 400; }
 
@@ -294,7 +294,7 @@ body.lit .ambient { opacity: 1; }
   .bar nav a::after { transition: none; }
 }
 
-/* ---------- round four: live numbers, the trailer, the changelog ---------- */
+/* Live numbers, trailer, changelog */
 .livedot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #3FE08A; margin-right: 7px; vertical-align: 1px; animation: ping 2s infinite; }
 .live-numbers b { min-width: 2ch; }
 
@@ -326,7 +326,7 @@ details.older .release { opacity: 1; transform: none; }
 @media (max-width: 700px) { .release { grid-template-columns: 1fr; gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .livedot, .trailer.soon .play { animation: none; } }
 
-/* ---------- round five: phones, and the About page ---------- */
+/* Mobile menu, responsive layout, About page */
 .skip { position: absolute; left: 12px; top: -60px; z-index: 100; background: var(--white); color: var(--black); padding: 10px 16px; border-radius: 10px; font-weight: 600; }
 .skip:focus { top: 12px; }
 
@@ -409,7 +409,7 @@ body.menu-open { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) { .menu-btn span, .mnav, .member { transition: none; } }
 
-/* ---------- the team, as a hierarchy ---------- */
+/* Team hierarchy */
 .tree { display: flex; flex-direction: column; align-items: center; }
 .tier { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 .tree .link { width: 2px; height: 46px; background: linear-gradient(var(--a), var(--b)); opacity: .7; position: relative; }
@@ -432,7 +432,7 @@ body.menu-open { overflow: hidden; }
 .member:not(.lv1):not(.lv2) .face { width: 76px; height: 76px; }
 @media (max-width: 440px) { .member, .member.lv1, .member.lv2 { width: 100%; } }
 
-/* ---------- accounts, live strip, leaderboards, profile ---------- */
+/* Accounts, live strip, leaderboards, profile */
 .signin { display: inline-flex; align-items: center; gap: 8px; color: var(--dim); font-size: 15px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; transition: color .15s, border-color .15s; white-space: nowrap; }
 .signin:hover { color: var(--white); border-color: var(--faint); }
 .signin.in { padding: 4px 12px 4px 4px; color: var(--white); }
@@ -518,3 +518,105 @@ body.menu-open { overflow: hidden; }
 }
 @media (max-width: 440px) { .bar .acts .signin:not(.in) { display: none; } }
 @media (prefers-reduced-motion: reduce) { .board li, .switch span, .switch span::after, .signin { transition: none; } }
+
+/* Profile milestones */
+.pf-ms { margin-top: 14px; }
+.ms-badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 10px; }
+.ms { border: 1px solid var(--line); border-radius: 14px; padding: 12px 6px 10px; text-align: center; background: #0D0D0D; opacity: .38; filter: grayscale(1); transition: opacity .2s, transform .2s; }
+.ms.got { opacity: 1; filter: none; border-color: color-mix(in srgb, var(--t) 55%, var(--line)); background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--t) 22%, transparent), #0D0D0D 70%); box-shadow: 0 0 22px -12px var(--t); }
+.ms.got:hover { transform: translateY(-2px); }
+.ms b { display: block; font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--t); }
+.ms span { color: var(--dim); font-size: 12px; }
+.ms-next { margin-top: 18px; display: grid; gap: 10px; }
+.ms-row { display: grid; grid-template-columns: 150px 1fr auto; align-items: center; gap: 14px; color: var(--dim); font-size: 14px; }
+.ms-bar { height: 8px; border-radius: 999px; background: #1A1A1A; overflow: hidden; }
+.ms-bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--sea), #8FF5E6); }
+.ms-of { font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) { .ms-row { grid-template-columns: 1fr; gap: 6px; } }
+@media (prefers-reduced-motion: reduce) { .ms { transition: none; } }
+
+/* Rarest catches and best catches */
+.tabs { flex-wrap: wrap; }
+.board .who b, .best .who b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.board .who small, .best .who small { display: block; color: var(--dim); font-size: 13px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+.board .count b, .best .count b { display: block; color: var(--white); text-align: right; }
+.board .count small, .best .count small { display: block; text-align: right; font-size: 13px; }
+.board .odds, .best .odds { color: #C9A8FF; }
+.pf-best { margin-top: 14px; }
+.best { list-style: none; padding: 0; margin: 0; }
+.best li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.best li:first-child { border-top: 0; }
+.best li.empty { color: var(--dim); }
+.best .rank { width: 32px; text-align: center; font-weight: 700; color: var(--dim); }
+.best .who { flex: 1; min-width: 0; }
+.best .count { color: var(--dim); white-space: nowrap; }
+.pf-alerts { margin: 14px 0 0; color: var(--dim); font-size: 14px; }
+
+/* Profile themes: the profile area takes its theme's colors */
+.pf-themed { --pf-bg: #000; --pf-panel: #161616; --pf-line: #303030; --pf-text: #FFF; --pf-dim: #8C8C8C; --pf-accent: #3FE0C8; }
+.pf-themed .pf-card, .pf-themed .pf-box { background: var(--pf-bg); border-color: var(--pf-line); color: var(--pf-text); }
+.pf-themed .pf-box h3, .pf-themed .pf-names p, .pf-themed .pf-nums span, .pf-themed .pf-box dt, .pf-themed .ms span, .pf-themed .best .who small, .pf-themed .best .count, .pf-themed .pf-alerts, .pf-themed .ms-row { color: var(--pf-dim); }
+.pf-themed .pf-avatar { border-color: var(--pf-bg); }
+.pf-themed .pf-roles .chip, .pf-themed .ms { background: var(--pf-panel); border-color: var(--pf-line); }
+.pf-themed .best li { border-color: var(--pf-line); }
+.pf-themed .best .count b, .pf-themed .best .who b { color: var(--pf-text); }
+.pf-themed .ms-bar i { background: linear-gradient(90deg, var(--pf-accent), color-mix(in srgb, var(--pf-accent) 55%, #fff)); }
+.pf-themed .switch input:checked + span { background: var(--pf-accent); }
+.pf-banner { position: relative; }
+.pf-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pf-bio { margin: 10px 28px 0; color: var(--pf-text); white-space: pre-wrap; overflow-wrap: anywhere; }
+.pf-featured { margin: 14px 28px 0; display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; padding: 10px 16px; border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--pf-accent) 45%, var(--pf-line)); background: color-mix(in srgb, var(--pf-accent) 10%, var(--pf-panel)); }
+.pf-featured .fl { font-size: 12px; font-weight: 700; color: var(--pf-accent); letter-spacing: .02em; }
+.pf-featured b { font-weight: 700; }
+.pf-featured .fo { color: var(--pf-dim); font-size: 14px; }
+/* Plus: the animated border and the gradient name */
+.pf-card { position: relative; }
+.pf-card.border { box-shadow: 0 0 60px -22px var(--pf-accent); }
+.pf-card.border::after { content: ""; position: absolute; inset: 0; border-radius: 24px; padding: 2px; pointer-events: none;
+  background: conic-gradient(from var(--ang), var(--pf-accent), transparent 30%, var(--pf-accent) 50%, transparent 80%, var(--pf-accent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spin 4s linear infinite; }
+.pf-names h1.fx { background: linear-gradient(90deg, var(--pf-accent), #FFFFFF, var(--pf-accent)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: pinkflow 5s linear infinite; }
+
+/* The customize panel */
+.pf-edit { margin-top: 14px; }
+.pf-edit h3 { color: var(--pf-text) !important; font-size: 17px; }
+.ed-note { color: var(--pf-dim); margin: -4px 0 16px; font-size: 14px; }
+.ed-row { display: grid; grid-template-columns: 140px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--pf-line); align-items: start; }
+.ed-label { color: var(--pf-dim); font-size: 14px; padding-top: 8px; }
+.ed-ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ed-theme, .ed-opt { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 12px; border: 1px solid var(--pf-line); background: var(--pf-panel); color: var(--pf-text); font: 500 14px var(--font); cursor: pointer; }
+.ed-theme .sw { width: 18px; height: 18px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); }
+.ed-theme[aria-pressed="true"], .ed-opt[aria-pressed="true"] { border-color: var(--pf-accent); box-shadow: 0 0 0 1px var(--pf-accent) inset; }
+.ed-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--pf-line); cursor: pointer; padding: 0; }
+.ed-swatch[aria-pressed="true"] { outline: 2px solid var(--pf-text); outline-offset: 2px; }
+.ed-pickwrap { display: inline-flex; align-items: center; gap: 6px; }
+.ed-pick { width: 38px; height: 30px; border: 1px solid var(--pf-line); border-radius: 8px; background: none; padding: 0; cursor: pointer; }
+.ed-pick:disabled { opacity: .4; cursor: not-allowed; }
+.ed-plus { font-size: 11px; font-weight: 700; color: #fff; background: #FF4FD8; border-radius: 999px; padding: 1px 7px; }
+.locked, button.locked { opacity: .45; cursor: not-allowed; }
+.ed-bio { width: 100%; resize: vertical; min-height: 70px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--pf-line); background: var(--pf-panel); color: var(--pf-text); font: 400 15px var(--font); }
+.ed-count { color: var(--pf-dim); font-size: 13px; }
+.ed-sel { padding: 9px 12px; border-radius: 12px; border: 1px solid var(--pf-line); background: var(--pf-panel); color: var(--pf-text); font: 400 15px var(--font); }
+.ed-foot { display: flex; align-items: center; gap: 14px; padding-top: 16px; border-top: 1px solid var(--pf-line); }
+.ed-status { color: var(--pf-dim); font-size: 14px; }
+.pf-settings { flex-wrap: wrap; }
+
+/* Players: search and profile links */
+.searchbox { max-width: 520px; margin: 0 auto; }
+.searchbox input { width: 100%; padding: 15px 20px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--white); font: 400 17px var(--font); }
+.searchbox input:focus { outline: none; border-color: var(--sea); box-shadow: 0 0 0 3px rgba(63,224,200,.15); }
+.ptitle { font-size: 22px; max-width: 760px; margin: 56px auto 16px; }
+.pu-msg .lede { margin-top: 10px; }
+.board li:has(> .rowlink) { padding: 0; }
+.rowlink { display: flex; align-items: center; gap: 14px; padding: 14px 18px; width: 100%; color: inherit; border-radius: 16px; }
+.rowlink:hover .who { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 1100px) { .bar nav a { padding: 8px 10px; font-size: 14px; } }
+@media (max-width: 640px) {
+  .ed-row { grid-template-columns: 1fr; gap: 8px; }
+  .ed-label { padding-top: 0; }
+  .pf-bio, .pf-featured { margin-left: 18px; margin-right: 18px; }
+  .rowlink { padding: 12px; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .pf-card.border::after, .pf-names h1.fx { animation: none; } }
