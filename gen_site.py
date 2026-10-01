@@ -34,7 +34,7 @@ PROFILE_ROLES = [["1552797683012472943", "Macro Developer", "#A970FF"], ["155279
 DL = SERVICE + "/download"                              # counted, then sent on to the file (see the service README)
 DISCORD = "https://discord.gg/ERkjTTYG4B"
 ICON = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v9m0 0l-4-4m4 4l4-4M4 15h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-PAGES = (("home", "index.html", "Home"), ("rods", "rods.html", "Rods"), ("features", "features.html", "Features"), ("leaderboard", "leaderboard.html", "Leaderboard"), ("changelog", "changelog.html", "Changelog"), ("about", "about.html", "About"))
+PAGES = (("home", "index.html", "Home"), ("rods", "rods.html", "Rods"), ("features", "features.html", "Features"), ("leaderboard", "leaderboard.html", "Leaderboard"), ("players", "players.html", "Players"), ("changelog", "changelog.html", "Changelog"), ("about", "about.html", "About"))
 
 def head(title, desc, page):
     nav = ""
@@ -444,14 +444,16 @@ def profile_page():
         <p class="fine" id="pf-msg">We only ask Discord who you are and your roles in the FISCHXR server.</p></div>
     </div>
   </div>
-  <div id="profile-in" class="pf-in" hidden>
-    <div class="pf-card">
-      <div class="pf-banner" id="pf-banner"></div>
+  <div id="profile-in" class="pf-in pf-themed" hidden>
+    <div class="pf-card" data-pf="card">
+      <div class="pf-banner" id="pf-banner" data-pf="banner"><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
       <div class="pf-head">
         <img class="pf-avatar" id="pf-avatar" alt="">
-        <div class="pf-names"><h1 id="pf-name"></h1><p id="pf-user"></p></div>
+        <div class="pf-names"><h1 id="pf-name" data-pf="name"></h1><p id="pf-user"></p></div>
         <div class="pf-badges" id="pf-badges"></div>
       </div>
+      <p class="pf-bio" data-pf="bio" hidden></p>
+      <div class="pf-featured" data-pf="featured" hidden></div>
       <div class="pf-roles" id="pf-roles"></div>
       <p class="pf-warn" id="pf-warn" hidden></p>
     </div>
@@ -468,9 +470,11 @@ def profile_page():
     <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pf-best"></ol><p class="pf-alerts" id="pf-alerts"></p></div>
     <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pf-ms"></div><div class="ms-next" id="pf-ms-next"></div></div>
     <div class="pf-box pf-settings">
-      <label class="switch"><input type="checkbox" id="pf-show"><span></span> Show me on the leaderboards</label>
+      <label class="switch"><input type="checkbox" id="pf-show"><span></span> Public profile: show me in search and on the leaderboards</label>
+      <a class="btn ghost" id="pf-public" href="players.html">View your public profile</a>
       <button type="button" class="btn ghost" id="pf-signout">Sign out</button>
     </div>
+    <div class="pf-box pf-edit" id="pf-edit"></div>
   </div>
 </div>
 """ + FOOT
@@ -478,3 +482,51 @@ def profile_page():
 open("leaderboard.html", "w", encoding="utf-8").write(leaderboard_page())
 open("profile.html", "w", encoding="utf-8").write(profile_page())
 print("leaderboard and profile written")
+
+def players_page():
+    return head("Players | FISCHXR by ReelWorks", "Find FISCHXR players and see their profiles.", "players") + """
+<div class="wrap">
+  <div class="top">
+    <h1>Players</h1>
+    <p class="lede">Find someone by their Discord name or ID.</p>
+    <div class="searchbox"><input type="search" id="psearch" placeholder="Search players" autocomplete="off" aria-label="Search players" maxlength="40"></div>
+  </div>
+  <h2 class="ptitle" id="ptitle">Top players</h2>
+  <ol class="board" id="presults"><li class="empty">Loading&hellip;</li></ol>
+</div>
+""" + FOOT
+
+def public_profile_page():
+    return head("Profile | FISCHXR by ReelWorks", "A FISCHXR player's profile.", "players") + """
+<div class="wrap">
+  <div class="top pu-msg" id="pu-msg"><h1>Loading&hellip;</h1></div>
+  <div id="pu" class="pf-in pf-themed" hidden>
+    <div class="pf-card" data-pf="card">
+      <div class="pf-banner" data-pf="banner"><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
+      <div class="pf-head">
+        <img class="pf-avatar" id="pu-avatar" alt="">
+        <div class="pf-names"><h1 data-pf="name" id="pu-name"></h1><p id="pu-status"></p></div>
+        <div class="pf-badges" id="pu-badges"></div>
+      </div>
+      <p class="pf-bio" data-pf="bio" hidden></p>
+      <div class="pf-featured" data-pf="featured" hidden></div>
+      <div class="pf-roles" id="pu-roles"></div>
+    </div>
+    <div class="pf-grid">
+      <div class="pf-box"><h3>Reels</h3>
+        <div class="pf-nums">
+          <div><b id="pu-week">&ndash;</b><span id="pu-week-rank">this week</span></div>
+          <div><b id="pu-all">&ndash;</b><span id="pu-all-rank">since launch</span></div>
+          <div><b id="pu-hours">&ndash;</b><span>hours fished</span></div>
+        </div>
+      </div>
+      <div class="pf-box"><h3>Best catches</h3><ol class="best" id="pu-best"></ol></div>
+    </div>
+    <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pu-ms"></div></div>
+  </div>
+</div>
+""" + FOOT
+
+open("players.html", "w", encoding="utf-8").write(players_page())
+open("u.html", "w", encoding="utf-8").write(public_profile_page())
+print("players and public profile written")
