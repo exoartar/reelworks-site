@@ -578,7 +578,7 @@
     let W = 0, H = 0, raf = 0, t0 = 0;
     const size = () => { const d = Math.min(2, window.devicePixelRatio || 1); W = canvas.clientWidth; H = canvas.clientHeight; canvas.width = W * d; canvas.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
     size(); window.addEventListener('resize', size);
-    const R = Math.random, n = theme === 'Midnight' ? 70 : theme === 'Aurora' ? 3 : 34;
+    const R = Math.random, n = theme === 'Midnight' ? 120 : theme === 'Aurora' ? 3 : 55;
     const parts = Array.from({ length: n }, () => ({ x: R(), y: R(), s: 0.5 + R(), p: R() * 6.28, v: 0.3 + R() * 0.7, r: R() * 6.28 }));
     const draw = (ts) => {
       const t = (ts - (t0 || (t0 = ts))) / 1000;
@@ -633,6 +633,13 @@
       .forEach(([k, v]) => root.style.setProperty(k, v));
     const q = (k) => root.querySelector(`[data-pf="${k}"]`);
     const card = q('card'), banner = q('banner'), name = q('name'), bio = q('bio'), feat = q('featured'), fx = q('fx');
+    const head = root.querySelector('.pf-head');
+    if (head) { head.style.position = 'relative'; head.style.zIndex = '2'; }   // (picture and name above the banner)
+    // the whole page takes the theme (light themes keep the page dark: the menu and footer are light-on-dark)
+    document.body.classList.add('pf-page');
+    document.body.style.setProperty('--page-bg', p.theme === 'Light' || p.theme === 'High contrast' ? '#000000' : t[0]);
+    document.body.style.setProperty('--page-accent', p.accent);
+    applyLayout(root, p.layout);
     if (card) card.classList.toggle('border', !!p.border);
     if (name) name.classList.toggle('fx', !!p.nameFx);
     if (banner) {
@@ -655,12 +662,23 @@
       feat.textContent = ''; feat.hidden = !f;
       if (f) feat.append(el('span', 'fl', 'Featured catch'), el('b', '', f.fish), el('span', 'fo', `1 in ${num(f.odds)}, ${num(f.kg)} kg`));
     }
-    if (fx) {
-      if (fx._stop) { fx._stop(); fx._stop = null; }
-      if (p.effects && !still) fx._stop = startFx(fx, p.theme, p.accent);
+    // Plus effects over the whole page, not just the banner
+    let pfx = document.querySelector('canvas.pf-fx-page');
+    if (pfx && pfx._stop) { pfx._stop(); pfx._stop = null; }
+    if (p.effects && !still) {
+      if (!pfx) { pfx = document.createElement('canvas'); pfx.className = 'pf-fx-page'; pfx.setAttribute('aria-hidden', 'true'); document.body.append(pfx); }
+      pfx._stop = startFx(pfx, p.theme, p.accent);
     }
   }
 
+  // Puts the profile's boxes in the owner's order.
+  const WIDGETS = ['status', 'reels', 'best', 'milestones'];
+  function applyLayout(root, layout) {
+    const box = root.querySelector('[data-pf="widgets"]');
+    if (!box) return;
+    const order = [...(layout || []), ...WIDGETS].filter((w, i, a) => WIDGETS.includes(w) && a.indexOf(w) === i);
+    order.forEach((w) => { const b = box.querySelector(`[data-w="${w}"]`); if (b) box.append(b); });
+  }
   const rolesInto = (box, ids) => (FX.roles || []).forEach(([id, rname, col]) => {
     if ((ids || []).includes(id)) { const c = el('span', 'chip', rname); c.style.setProperty('--c', col); box.append(c); }
   });
@@ -682,6 +700,7 @@
   const milestonesInto = (box, reels, hours) => {
     const TIER = ['#CD7F32', '#C9CCD6', '#FFC940', '#3FE08A', '#4F8BFF', '#A970FF', '#FF4FD8'];
     box.textContent = '';
+    box.style.display = 'block';                       // (full-width rails even with an older stylesheet)
     const rail = (label, val, list, unit) => {
       const n = list.length, k = list.filter((m) => val >= m).length;
       const prev = k ? list[k - 1] : 0, next = list[k];
@@ -739,25 +758,34 @@
       .catch(() => say('Couldn\'t load this profile', 'Try again in a minute.'));
   }
 
-  // ---- the players page: search, or the top players
+  // ---- the players page: search, or the top players, as cards
   const box = document.getElementById('psearch');
   if (box) {
-    const list = document.getElementById('presults'), title = document.getElementById('ptitle');
-    const show = (rows, empty) => {
+    const list = document.getElementById('presults'), title = document.getElementById('ptitle'), count = document.getElementById('pcount');
+    const card = (r, rank) => {
+      const a = el('a', 'pcard'); a.href = 'u.html?id=' + r.id;
+      if (r.accent) a.style.setProperty('--c', r.accent);
+      const img = el('img', 'pav'); img.src = `${FX.service}/avatar/${r.id}`; img.alt = ''; img.loading = 'lazy';
+      img.onerror = () => img.replaceWith(el('span', 'pav pav-x', String(r.name || '?').trim().slice(0, 1).toUpperCase()));
+      const info = el('span', 'pinfo');
+      info.append(el('b', 'pname', r.name), el('span', 'pmeta', num(r.reels) + ' reels'));
+      a.append(img, info);
+      const tags = el('span', 'ptags');
+      if (rank) tags.append(el('span', 'prank', MEDALS[rank] || '#' + rank));
+      if (r.plus) tags.append(el('span', 'badge plus psm', 'Plus'));
+      a.append(tags);
+      return a;
+    };
+    const show = (rows, empty, ranked) => {
       list.textContent = '';
-      if (!rows.length) { list.append(el('li', 'empty', empty)); return; }
-      rows.forEach((r, i) => {
-        const li = el('li'), a = el('a', 'rowlink'); a.href = 'u.html?id=' + r.id;
-        a.append(el('span', 'rank', r.rank ? MEDALS[r.rank] || '#' + r.rank : String(i + 1)));
-        const img = el('img'); img.src = `${FX.service}/avatar/${r.id}`; img.alt = ''; img.loading = 'lazy'; img.onerror = () => img.remove();
-        a.append(img, el('span', 'who', r.name), el('span', 'count', num(r.reels) + ' reels'));
-        li.append(a); list.append(li);
-      });
+      count.textContent = rows.length ? `${rows.length} ${rows.length === 1 ? 'player' : 'players'}` : '';
+      if (!rows.length) { list.append(el('p', 'pempty', empty)); return; }
+      rows.forEach((r) => list.append(card(r, ranked ? r.rank : 0)));
     };
     const top = () => {
       title.textContent = 'Top players';
       fetch(`${FX.service}/leaderboard?period=all`, { cache: 'no-store' }).then((r) => r.json())
-        .then((b) => show(b.entries || [], 'Nobody on the board yet.')).catch(() => show([], "Players couldn't be loaded right now."));
+        .then((b) => show(b.entries || [], 'Nobody on the board yet.', true)).catch(() => show([], "Players couldn't be loaded right now."));
     };
     let timer = 0;
     box.addEventListener('input', () => {
@@ -767,9 +795,12 @@
         if (q.length < 2) return top();
         title.textContent = `Results for "${q}"`;
         fetch(`${FX.service}/search?q=${encodeURIComponent(q)}`, { cache: 'no-store' }).then((r) => r.json())
-          .then((b) => show(b.results || [], 'No players found. Hidden profiles don\'t show up in search.'))
+          .then((b) => show(b.results || [], 'No players found. Hidden profiles don\'t show up in search.', false))
           .catch(() => show([], "Search isn't available right now."));
       }, 300);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== box && !/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) { e.preventDefault(); box.focus(); }
     });
     top();
   }
@@ -843,6 +874,55 @@
       l.append(i, el('span', 'track'), document.createTextNode(' ' + label + ' ')); l.append(el('span', 'ed-plus', 'Plus'));
       fxC.append(l);
     });
+    // widget order (Plus): drag the boxes, or use their arrows
+    const wRow = row('Widgets'), wBox = root.querySelector('[data-pf="widgets"]');
+    const arr = el('button', 'ed-opt', 'Rearrange widgets'); arr.type = 'button'; arr.dataset.arrange = '1';
+    lockTag(arr);
+    wRow.append(arr, el('span', 'ed-count', plus ? 'Drag the boxes into the order you like, or use the arrows on each.' : ''));
+    const order = () => [...wBox.querySelectorAll('[data-w]')].map((x) => x.dataset.w);
+    const NAMES = { status: 'Status', reels: 'Reels', best: 'Best catches', milestones: 'Milestones' };
+    const moveBy = (w, d) => {
+      const o = order(), i = o.indexOf(w.dataset.w), j = i + d;
+      if (j < 0 || j >= o.length) return;
+      [o[i], o[j]] = [o[j], o[i]];
+      draft.layout = o; applyLayout(root, o);
+    };
+    let arranging = false, dragging = null;
+    const setArranging = (on) => {
+      arranging = on;
+      wBox.classList.toggle('arranging', on);
+      arr.firstChild.textContent = on ? 'Done arranging' : 'Rearrange widgets';
+      wBox.querySelectorAll('[data-w]').forEach((w) => {
+        w.draggable = on;
+        let bar = w.querySelector('.w-bar');
+        if (on && !bar) {
+          bar = el('div', 'w-bar');
+          const back = el('button', 'w-move', '←'), fwd = el('button', 'w-move', '→');
+          back.type = fwd.type = 'button';
+          back.setAttribute('aria-label', `Move ${NAMES[w.dataset.w]} earlier`); fwd.setAttribute('aria-label', `Move ${NAMES[w.dataset.w]} later`);
+          back.addEventListener('click', () => moveBy(w, -1)); fwd.addEventListener('click', () => moveBy(w, 1));
+          bar.append(el('span', 'w-grip', '⠿ Drag to move'), back, fwd);
+          w.prepend(bar);
+        } else if (!on && bar) bar.remove();
+      });
+    };
+    arr.addEventListener('click', () => { if (plus) setArranging(!arranging); });
+    wBox.addEventListener('dragstart', (ev) => {
+      const w = ev.target.closest && ev.target.closest('[data-w]');
+      if (!arranging || !w) return;
+      dragging = w; w.classList.add('dragging');
+      try { ev.dataTransfer.effectAllowed = 'move'; ev.dataTransfer.setData('text/plain', w.dataset.w); } catch (e) { /* older browsers */ }
+    });
+    wBox.addEventListener('dragover', (ev) => {
+      if (!dragging) return;
+      ev.preventDefault();
+      const over = ev.target.closest && ev.target.closest('[data-w]');
+      if (!over || over === dragging) return;
+      const o = order();
+      if (o.indexOf(dragging.dataset.w) < o.indexOf(over.dataset.w)) over.after(dragging); else over.before(dragging);
+    });
+    wBox.addEventListener('drop', (ev) => { if (dragging) ev.preventDefault(); });
+    wBox.addEventListener('dragend', () => { if (dragging) { dragging.classList.remove('dragging'); dragging = null; draft.layout = order(); } });
     // save
     const foot = el('div', 'ed-foot'), save = el('button', 'btn white', 'Save'), status = el('span', 'ed-status');
     save.type = 'button';
@@ -850,11 +930,31 @@
       save.disabled = true; status.textContent = 'Saving…';
       fetch(FX.service + '/me/profile', { method: 'PUT', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(draft) })
         .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((j) => { paint(root, { profile: j.profile, banner: dBanner, discordColor: dColor, best }); status.textContent = 'Saved.'; })
+        .then((j) => { if (arranging) setArranging(false); paint(root, { profile: j.profile, banner: dBanner, discordColor: dColor, best }); status.textContent = 'Saved.'; })
         .catch(() => { status.textContent = "Couldn't save. Try again in a minute."; })
         .finally(() => { save.disabled = false; });
     });
     foot.append(save, status); edit.append(foot);
   });
-  window.FXProfiles = { effective, paint, THEMES, bestInto, milestonesInto };
+  // ---- the downloads switch (admins: /downloads in the bot)
+  if (FX.service && window.fetch) fetch(FX.service + '/site', { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((c) => {
+      const d = c && c.downloads;
+      if (!d || d.enabled !== false) return;
+      const msg = d.message || 'Downloads are switched off for now. Check the Discord for news.';
+      document.querySelectorAll('a[href]').forEach((a) => {
+        const h = a.getAttribute('href');
+        if (h === FX.service + '/download' || /download\/FISCHXR\.exe$/.test(h)) {
+          a.removeAttribute('href'); a.removeAttribute('download');
+          a.classList.add('dl-off'); a.setAttribute('aria-disabled', 'true'); a.title = msg;
+          a.textContent = 'Downloads paused';
+        }
+      });
+      const main = document.getElementById('main');
+      if (main) { const note = el('div', 'dl-note'); note.setAttribute('role', 'status'); note.append(el('b', '', 'Downloads are paused. '), document.createTextNode(msg)); main.prepend(note); }
+    })
+    .catch(() => {});
+
+  window.FXProfiles = { effective, paint, THEMES, bestInto, milestonesInto, applyLayout };
 })();

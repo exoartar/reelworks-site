@@ -1,4 +1,4 @@
-import html, json, hashlib
+import html, json, hashlib, os
 
 # Cache-busting: asset links carry a hash of the file contents.
 def _fp(path):
@@ -446,7 +446,7 @@ def profile_page():
   </div>
   <div id="profile-in" class="pf-in pf-themed" hidden>
     <div class="pf-card" data-pf="card">
-      <div class="pf-banner" id="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
+      <div class="pf-banner" id="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div></div>
       <div class="pf-head">
         <img class="pf-avatar" id="pf-avatar" alt="">
         <div class="pf-names"><h1 id="pf-name" data-pf="name"></h1><p id="pf-user"></p></div>
@@ -457,19 +457,17 @@ def profile_page():
       <div class="pf-roles" id="pf-roles"></div>
       <p class="pf-warn" id="pf-warn" hidden></p>
     </div>
-    <div class="pf-grid">
-      <div class="pf-box"><h3>Your macro</h3><dl id="pf-macro"></dl></div>
-      <div class="pf-box"><h3>Your reels</h3>
+    <div class="pf-widgets" data-pf="widgets">
+      <div class="pf-box" data-w="status"><h3>Your macro</h3><dl id="pf-macro"></dl></div>
+      <div class="pf-box" data-w="reels"><h3>Your reels</h3>
         <div class="pf-nums">
           <div><b id="pf-week">&ndash;</b><span id="pf-week-rank">this week</span></div>
           <div><b id="pf-all">&ndash;</b><span id="pf-all-rank">all time</span></div>
           <div><b id="pf-hours">&ndash;</b><span>hours fished</span></div>
         </div>
       </div>
-    </div>
-    <div class="pf-grid pf-grid2">
-      <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pf-best"></ol><p class="pf-alerts" id="pf-alerts"></p></div>
-      <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pf-ms"></div></div>
+      <div class="pf-box pf-best" data-w="best"><h3>Best catches</h3><ol class="best" id="pf-best"></ol><p class="pf-alerts" id="pf-alerts"></p></div>
+      <div class="pf-box pf-ms" data-w="milestones"><h3>Milestones</h3><div class="ms-badges" id="pf-ms"></div></div>
     </div>
     <div class="pf-box pf-settings">
       <label class="switch"><input type="checkbox" id="pf-show"><span class="track"></span> Public profile: show me in search and on the leaderboards</label>
@@ -490,11 +488,15 @@ def players_page():
 <div class="wrap">
   <div class="top">
     <h1>Players</h1>
-    <p class="lede">Find someone by their Discord name or ID.</p>
-    <div class="searchbox"><input type="search" id="psearch" placeholder="Search players" autocomplete="off" aria-label="Search players" maxlength="40"></div>
+    <p class="lede">Find anyone using FISCHXR by their Discord name, username or ID.</p>
+    <label class="psearch">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.6-3.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="search" id="psearch" placeholder="Search players" autocomplete="off" aria-label="Search players" maxlength="40">
+      <kbd class="pkey" aria-hidden="true">/</kbd>
+    </label>
   </div>
-  <h2 class="ptitle" id="ptitle">Top players</h2>
-  <ol class="board" id="presults"><li class="empty">Loading&hellip;</li></ol>
+  <div class="phead"><h2 class="ptitle" id="ptitle">Top players</h2><span class="pcount" id="pcount"></span></div>
+  <div class="pcards" id="presults"><p class="pempty">Loading&hellip;</p></div>
 </div>
 """ + FOOT
 
@@ -504,7 +506,7 @@ def public_profile_page():
   <div class="top pu-msg" id="pu-msg"><h1>Loading&hellip;</h1></div>
   <div id="pu" class="pf-in pf-themed" hidden>
     <div class="pf-card" data-pf="card">
-      <div class="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
+      <div class="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div></div>
       <div class="pf-head">
         <img class="pf-avatar" id="pu-avatar" alt="">
         <div class="pf-names"><h1 data-pf="name" id="pu-name"></h1><p id="pu-status"></p></div>
@@ -514,19 +516,17 @@ def public_profile_page():
       <div class="pf-featured" data-pf="featured" hidden></div>
       <div class="pf-roles" id="pu-roles"></div>
     </div>
-    <div class="pf-grid">
-      <div class="pf-box"><h3>Reels</h3>
+    <div class="pf-widgets" data-pf="widgets">
+      <div class="pf-box" data-w="status"><h3>Status</h3><p class="pu-fishing" id="pu-fishing"></p></div>
+      <div class="pf-box" data-w="reels"><h3>Reels</h3>
         <div class="pf-nums">
           <div><b id="pu-week">&ndash;</b><span id="pu-week-rank">this week</span></div>
           <div><b id="pu-all">&ndash;</b><span id="pu-all-rank">since launch</span></div>
           <div><b id="pu-hours">&ndash;</b><span>hours fished</span></div>
         </div>
       </div>
-      <div class="pf-box"><h3>Status</h3><p class="pu-fishing" id="pu-fishing"></p></div>
-    </div>
-    <div class="pf-grid pf-grid2">
-      <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pu-best"></ol></div>
-      <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pu-ms"></div></div>
+      <div class="pf-box pf-best" data-w="best"><h3>Best catches</h3><ol class="best" id="pu-best"></ol></div>
+      <div class="pf-box pf-ms" data-w="milestones"><h3>Milestones</h3><div class="ms-badges" id="pu-ms"></div></div>
     </div>
   </div>
 </div>
@@ -535,3 +535,30 @@ def public_profile_page():
 open("players.html", "w", encoding="utf-8").write(players_page())
 open("u.html", "w", encoding="utf-8").write(public_profile_page())
 print("players and public profile written")
+
+FUNCTION = r'''// Generated by gen_site.py: blocks /download/ while downloads are switched off
+// (with /downloads in the bot). Asks the FISCHXR service at most every 30 seconds.
+const SERVICE = %s;
+let cache = { at: 0, value: null };
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+export async function onRequest(context) {
+  try {
+    if (!cache.value || Date.now() - cache.at > 30000) {
+      const r = await fetch(SERVICE + "/site", { cf: { cacheTtl: 0 } });
+      cache = { at: Date.now(), value: r.ok ? await r.json() : null };
+    }
+    const d = cache.value && cache.value.downloads;
+    if (d && d.enabled === false) {
+      const msg = esc(d.message || "FISCHXR downloads are switched off for now. Check the Discord for news.");
+      return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Downloads paused</title>'
+        + '<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#000;color:#fff;font:16px/1.6 system-ui,sans-serif;text-align:center;padding:24px">'
+        + '<div><h1 style="font-size:32px;margin:0 0 10px">Downloads are paused</h1><p style="color:#9A9A9A;max-width:46ch;margin:0 auto">' + msg + '</p></div></body>',
+        { status: 503, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+    }
+  } catch (e) { /* the service can't be reached: don't block downloads */ }
+  return context.next();
+}
+''' % json.dumps(SERVICE.rstrip("/"))
+os.makedirs("functions/download", exist_ok=True)
+open("functions/download/_middleware.js", "w", encoding="utf-8").write(FUNCTION)
+print("download guard written")
