@@ -539,8 +539,8 @@ body.menu-open { overflow: hidden; }
 .tabs { flex-wrap: wrap; }
 .board .who b, .best .who b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .board .who small, .best .who small { display: block; color: var(--dim); font-size: 13px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
-.board .count b, .best .count b { display: block; color: var(--white); text-align: right; }
-.board .count small, .best .count small { display: block; text-align: right; font-size: 13px; }
+.board .count b, .best .odds-wrap b { display: block; color: var(--white); text-align: right; }
+.board .count small, .best .odds-wrap small { display: block; text-align: right; font-size: 13px; }
 .board .odds, .best .odds { color: #C9A8FF; }
 .pf-best { margin-top: 14px; }
 .best { list-style: none; padding: 0; margin: 0; }
@@ -549,17 +549,17 @@ body.menu-open { overflow: hidden; }
 .best li.empty { color: var(--dim); }
 .best .rank { width: 32px; text-align: center; font-weight: 700; color: var(--dim); }
 .best .who { flex: 1; min-width: 0; }
-.best .count { color: var(--dim); white-space: nowrap; }
+.best .odds-wrap { color: var(--dim); white-space: nowrap; }
 .pf-alerts { margin: 14px 0 0; color: var(--dim); font-size: 14px; }
 
 /* Profile themes: the profile area takes its theme's colors */
 .pf-themed { --pf-bg: #000; --pf-panel: #161616; --pf-line: #303030; --pf-text: #FFF; --pf-dim: #8C8C8C; --pf-accent: #3FE0C8; }
 .pf-themed .pf-card, .pf-themed .pf-box { background: var(--pf-bg); border-color: var(--pf-line); color: var(--pf-text); }
-.pf-themed .pf-box h3, .pf-themed .pf-names p, .pf-themed .pf-nums span, .pf-themed .pf-box dt, .pf-themed .ms span, .pf-themed .best .who small, .pf-themed .best .count, .pf-themed .pf-alerts, .pf-themed .ms-row { color: var(--pf-dim); }
+.pf-themed .pf-box h3, .pf-themed .pf-names p, .pf-themed .pf-nums span, .pf-themed .pf-box dt, .pf-themed .ms span, .pf-themed .best .who small, .pf-themed .best .odds-wrap, .pf-themed .pf-alerts, .pf-themed .ms-row { color: var(--pf-dim); }
 .pf-themed .pf-avatar { border-color: var(--pf-bg); }
 .pf-themed .pf-roles .chip, .pf-themed .ms { background: var(--pf-panel); border-color: var(--pf-line); }
 .pf-themed .best li { border-color: var(--pf-line); }
-.pf-themed .best .count b, .pf-themed .best .who b { color: var(--pf-text); }
+.pf-themed .best .odds-wrap b, .pf-themed .best .who b { color: var(--pf-text); }
 .pf-themed .ms-bar i { background: linear-gradient(90deg, var(--pf-accent), color-mix(in srgb, var(--pf-accent) 55%, #fff)); }
 .pf-themed .switch input:checked + .track { background: var(--pf-accent); }
 .pf-banner { position: relative; }
@@ -645,12 +645,19 @@ body.menu-open { overflow: hidden; }
 .best li { padding: 9px 0; gap: 12px; }
 .best .rank { width: 24px; font-size: 16px; }
 .best .fish { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--pf-text, #fff); }
-.best .count { display: flex; align-items: baseline; gap: 10px; }
-.best .count b, .best .count small { display: inline; text-align: right; }
-.best .count small { color: var(--pf-dim, var(--dim)); font-size: 13px; }
+.best .odds-wrap { display: flex; align-items: baseline; gap: 10px; }
+.best .odds-wrap b, .best .odds-wrap small { display: inline; text-align: right; }
+.best .odds-wrap small { color: var(--pf-dim, var(--dim)); font-size: 13px; }
 @media (max-width: 900px) { .pf-grid2 { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .pf-banner { height: 140px; } }
 @media (prefers-reduced-motion: reduce) { .mt-node { transition: none; } }
 .pu-fishing { margin: 0; display: grid; gap: 4px; }
 .pu-fishing b { font-size: 22px; font-weight: 700; color: var(--pf-text, #fff); }
 .pu-fishing span { color: var(--pf-dim, var(--dim)); }
+
+/* Fixes: milestone rails at full width; the profile header above the banner */
+.pf-ms .ms-badges { display: block; }
+.pf-head { position: relative; z-index: 2; }
+.pf-grid2 { align-items: start; }
+.mt-head { flex-wrap: nowrap; }
+.mt-val { white-space: nowrap; }
