@@ -512,32 +512,8 @@
           if (lb.rankWeek) document.getElementById('pf-week-rank').textContent = `this week, #${lb.rankWeek} of ${lb.peopleWeek}`;
           if (lb.rankAll) document.getElementById('pf-all-rank').textContent = `all time, #${lb.rankAll} of ${lb.peopleAll}`;
         }
-        // milestones: lifetime reels and hours fished
-        const TIER = ['#CD7F32', '#C9CCD6', '#FFC940', '#3FE08A', '#4F8BFF', '#A970FF', '#FF4FD8'];
-        const REELS = [100, 1000, 5000, 10000, 25000, 50000, 100000], HOURS = [10, 50, 100, 250, 500, 1000];
-        const life = lb.lifetime || 0, hrs = (lb.secs || 0) / 3600;
-        const msBox = document.getElementById('pf-ms'), nextBox = document.getElementById('pf-ms-next');
-        const badge = (label, sub, got, i) => {
-          const b = el('div', 'ms' + (got ? ' got' : ''));
-          b.style.setProperty('--t', TIER[i]);
-          b.append(el('b', '', label), el('span', '', sub));
-          b.title = got ? 'Earned' : 'Not yet';
-          return b;
-        };
-        REELS.forEach((m, i) => msBox.append(badge(m >= 1000 ? m / 1000 + 'k' : String(m), 'reels', life >= m, i)));
-        HOURS.forEach((m, i) => msBox.append(badge(m >= 1000 ? m / 1000 + 'k' : String(m), 'hours', hrs >= m, i)));
-        const next = (val, list, unit) => {
-          const m = list.find((x) => val < x);
-          if (!m) return;
-          const row = el('div', 'ms-row');
-          row.append(el('span', '', `Next: ${m.toLocaleString()} ${unit}`));
-          const track = el('div', 'ms-bar'), fill = el('i');
-          fill.style.width = Math.min(100, (val / m) * 100).toFixed(1) + '%';
-          track.append(fill);
-          row.append(track, el('span', 'ms-of', `${Math.floor(val).toLocaleString()} / ${m.toLocaleString()}`));
-          nextBox.append(row);
-        };
-        next(life, REELS, 'reels'); next(hrs, HOURS, 'hours');
+        // milestones: lifetime reels and hours fished (drawn by the profiles code below)
+        if (window.FXProfiles) window.FXProfiles.milestonesInto(document.getElementById('pf-ms'), lb.lifetime || 0, (lb.secs || 0) / 3600);
         const show = document.getElementById('pf-show');
         show.checked = !lb.hidden;
         show.addEventListener('change', () => {
@@ -549,16 +525,8 @@
         });
       } else document.getElementById('pf-show').disabled = true;
       // best catches, and whether catch DMs are on
-      const best = document.getElementById('pf-best'), bests = (svc && svc.best) || [];
-      if (!bests.length) best.append(el('li', 'empty', 'No rare catches yet. They show up once FISCHXR 5.7.0 or later reads a catch of 1 in 100 or rarer.'));
-      bests.forEach((c, i) => {
-        const li = el('li');
-        li.append(el('span', 'rank', MEDALS[i + 1] || '#' + (i + 1)));
-        const what = el('span', 'who'); what.append(el('b', '', c.fish), el('small', '', new Date(c.at).toLocaleDateString() + (c.rod ? ', ' + c.rod : '')));
-        const right = el('span', 'count'); right.append(el('b', 'odds', '1 in ' + Number(c.odds).toLocaleString()), el('small', '', Number(c.kg).toLocaleString() + ' kg'));
-        li.append(what, right);
-        best.append(li);
-      });
+      const bests = (svc && svc.best) || [];
+      if (window.FXProfiles) window.FXProfiles.bestInto(document.getElementById('pf-best'), bests);
       if (svc) document.getElementById('pf-alerts').textContent = svc.alertMin
         ? `Catch DMs: on, for 1 in ${Number(svc.alertMin).toLocaleString()} or rarer. Change it with /catch-alerts in Discord.`
         : 'Catch DMs: off. Turn them on with /catch-alerts in Discord.';
@@ -668,10 +636,15 @@
     if (card) card.classList.toggle('border', !!p.border);
     if (name) name.classList.toggle('fx', !!p.nameFx);
     if (banner) {
-      banner.style.background = ''; banner.style.backgroundImage = '';
-      if (p.banner === 'scene' && PLUS.includes(p.theme)) banner.style.backgroundImage = `url("assets/themes/${p.theme.toLowerCase()}.png")`;
-      else if (p.banner === 'discord' && d.banner) banner.style.backgroundImage = `url("${d.banner}")`;
-      else if (p.banner === 'discord' && Number.isInteger(d.discordColor)) banner.style.background = `linear-gradient(135deg, #${d.discordColor.toString(16).padStart(6, '0')}, ${t[0]} 85%)`;
+      // (pictures are shown whole: a Discord banner centered over a blurred copy
+      // of itself, a theme scene fitted to the height on the right)
+      banner.classList.remove('bn-photo', 'bn-scene');
+      banner.style.background = ''; banner.style.backgroundImage = ''; banner.style.removeProperty('--bn');
+      if (p.banner === 'scene' && PLUS.includes(p.theme)) {
+        banner.classList.add('bn-scene'); banner.style.setProperty('--bn', `url("assets/themes/${p.theme.toLowerCase()}.png")`); banner.style.background = t[0];
+      } else if (p.banner === 'discord' && d.banner) {
+        banner.classList.add('bn-photo'); banner.style.setProperty('--bn', `url("${d.banner}")`);
+      } else if (p.banner === 'discord' && Number.isInteger(d.discordColor)) banner.style.background = `linear-gradient(135deg, #${d.discordColor.toString(16).padStart(6, '0')}, ${t[0]} 85%)`;
       else banner.style.background = `linear-gradient(135deg, ${p.accent}, ${t[0]} 85%)`;
     }
     if (bio) { bio.textContent = p.bio || ''; bio.hidden = !p.bio; }
@@ -689,20 +662,46 @@
   const rolesInto = (box, ids) => (FX.roles || []).forEach(([id, rname, col]) => {
     if ((ids || []).includes(id)) { const c = el('span', 'chip', rname); c.style.setProperty('--c', col); box.append(c); }
   });
+  // The top 3 catches, one line each.
   const bestInto = (list, best) => {
-    if (!(best || []).length) { list.append(el('li', 'empty', 'No rare catches yet.')); return; }
-    best.forEach((c, i) => {
-      const li = el('li'); li.append(el('span', 'rank', MEDALS[i + 1] || '#' + (i + 1)));
-      const w = el('span', 'who'); w.append(el('b', '', c.fish), el('small', '', c.rod || ''));
+    list.textContent = '';
+    const top = (best || []).slice(0, 3);
+    if (!top.length) { list.append(el('li', 'empty', 'No rare catches yet.')); return; }
+    top.forEach((c, i) => {
+      const li = el('li'); li.append(el('span', 'rank', MEDALS[i + 1]));
+      li.append(el('b', 'fish', c.fish));
       const r = el('span', 'count'); r.append(el('b', 'odds', '1 in ' + num(c.odds)), el('small', '', num(c.kg) + ' kg'));
-      li.append(w, r); list.append(li);
+      li.append(r); list.append(li);
     });
   };
+  // Milestones as two rails (reels, hours): each milestone a point, lit once
+  // reached, the rail filled to where you are.
+  const short = (m) => (m >= 1000 ? m / 1000 + 'k' : String(m));
   const milestonesInto = (box, reels, hours) => {
     const TIER = ['#CD7F32', '#C9CCD6', '#FFC940', '#3FE08A', '#4F8BFF', '#A970FF', '#FF4FD8'];
-    const one = (label, sub, got, i) => { const b = el('div', 'ms' + (got ? ' got' : '')); b.style.setProperty('--t', TIER[i]); b.append(el('b', '', label), el('span', '', sub)); return b; };
-    [100, 1000, 5000, 10000, 25000, 50000, 100000].forEach((m, i) => box.append(one(m >= 1000 ? m / 1000 + 'k' : String(m), 'reels', reels >= m, i)));
-    [10, 50, 100, 250, 500, 1000].forEach((m, i) => box.append(one(m >= 1000 ? m / 1000 + 'k' : String(m), 'hours', hours >= m, i)));
+    box.textContent = '';
+    const rail = (label, val, list, unit) => {
+      const n = list.length, k = list.filter((m) => val >= m).length;
+      const prev = k ? list[k - 1] : 0, next = list[k];
+      const p = Math.min(1, (k + (next ? (val - prev) / (next - prev) : 0)) / n);
+      const row = el('div', 'mt'), head = el('div', 'mt-head');
+      head.append(el('span', 'mt-label', label), el('b', 'mt-val', num(Math.floor(val)) + ' ' + unit));
+      const r = el('div', 'mt-rail'), fill = el('i', 'mt-fill');
+      fill.style.width = (p * 100).toFixed(1) + '%';
+      r.append(fill);
+      list.forEach((m, i) => {
+        const node = el('span', 'mt-node' + (val >= m ? ' got' : ''));
+        node.style.left = ((i + 1) / n * 100) + '%';
+        node.style.setProperty('--t', TIER[i]);
+        node.title = num(m) + ' ' + unit + (val >= m ? ': reached' : '');
+        node.append(el('small', '', short(m)));
+        r.append(node);
+      });
+      row.append(head, r, el('p', 'mt-next', next ? `${num(Math.ceil(next - val))} ${unit} to ${short(next)}` : 'Every milestone reached'));
+      box.append(row);
+    };
+    rail('Reels', reels, [100, 1000, 5000, 10000, 25000, 50000, 100000], 'reels');
+    rail('Time fished', hours, [10, 50, 100, 250, 500, 1000], 'hours');
   };
 
   // ---- the public profile page (u.html?id=...)
@@ -721,6 +720,8 @@
         document.getElementById('pu-avatar').src = j.avatar;
         document.getElementById('pu-name').textContent = j.name;
         document.getElementById('pu-status').textContent = j.fishing ? 'Fishing now' + (j.rod ? ' with ' + j.rod : '') : 'Not fishing right now';
+        const pf = document.getElementById('pu-fishing');
+        if (pf) { pf.textContent = ''; pf.append(el('b', '', j.fishing ? '🎣 Fishing now' : 'Not fishing right now')); if (j.fishing && j.rod) pf.append(el('span', '', 'with ' + j.rod)); }
         if (j.plus) document.getElementById('pu-badges').append(el('span', 'badge plus', 'FISCHXR Plus'));
         rolesInto(document.getElementById('pu-roles'), j.roles);
         const lb = j.lb || {};
@@ -828,8 +829,8 @@
     // featured catch
     const featC = row('Featured catch'), sel = el('select', 'ed-sel');
     sel.append(new Option('None', '-1'));
-    best.forEach((c, i) => sel.append(new Option(`${c.fish} (1 in ${num(c.odds)})`, String(i))));
-    sel.value = String(draft.featured); sel.disabled = !best.length;
+    best.slice(0, 3).forEach((c, i) => sel.append(new Option(`${c.fish} (1 in ${num(c.odds)})`, String(i))));
+    sel.value = draft.featured < 3 ? String(draft.featured) : '-1'; sel.disabled = !best.length;
     sel.addEventListener('change', () => { draft.featured = Number(sel.value); repaint(); });
     featC.append(sel);
     // Plus effects
@@ -837,7 +838,7 @@
     [['nameFx', 'Gradient name'], ['border', 'Animated border'], ['effects', 'Living effects']].forEach(([k, label]) => {
       const l = el('label', 'switch' + (plus ? '' : ' locked')), i = el('input'); i.type = 'checkbox'; i.checked = !!draft[k]; i.disabled = !plus; i.dataset.key = k;
       i.addEventListener('change', () => { draft[k] = i.checked; repaint(); });
-      l.append(i, el('span'), document.createTextNode(' ' + label + ' ')); l.append(el('span', 'ed-plus', 'Plus'));
+      l.append(i, el('span', 'track'), document.createTextNode(' ' + label + ' ')); l.append(el('span', 'ed-plus', 'Plus'));
       fxC.append(l);
     });
     // save
@@ -853,5 +854,5 @@
     });
     foot.append(save, status); edit.append(foot);
   });
-  window.FXProfiles = { effective, paint, THEMES };
+  window.FXProfiles = { effective, paint, THEMES, bestInto, milestonesInto };
 })();

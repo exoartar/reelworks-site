@@ -446,7 +446,7 @@ def profile_page():
   </div>
   <div id="profile-in" class="pf-in pf-themed" hidden>
     <div class="pf-card" data-pf="card">
-      <div class="pf-banner" id="pf-banner" data-pf="banner"><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
+      <div class="pf-banner" id="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
       <div class="pf-head">
         <img class="pf-avatar" id="pf-avatar" alt="">
         <div class="pf-names"><h1 id="pf-name" data-pf="name"></h1><p id="pf-user"></p></div>
@@ -467,10 +467,12 @@ def profile_page():
         </div>
       </div>
     </div>
-    <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pf-best"></ol><p class="pf-alerts" id="pf-alerts"></p></div>
-    <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pf-ms"></div><div class="ms-next" id="pf-ms-next"></div></div>
+    <div class="pf-grid pf-grid2">
+      <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pf-best"></ol><p class="pf-alerts" id="pf-alerts"></p></div>
+      <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pf-ms"></div></div>
+    </div>
     <div class="pf-box pf-settings">
-      <label class="switch"><input type="checkbox" id="pf-show"><span></span> Public profile: show me in search and on the leaderboards</label>
+      <label class="switch"><input type="checkbox" id="pf-show"><span class="track"></span> Public profile: show me in search and on the leaderboards</label>
       <a class="btn ghost" id="pf-public" href="players.html">View your public profile</a>
       <button type="button" class="btn ghost" id="pf-signout">Sign out</button>
     </div>
@@ -502,7 +504,7 @@ def public_profile_page():
   <div class="top pu-msg" id="pu-msg"><h1>Loading&hellip;</h1></div>
   <div id="pu" class="pf-in pf-themed" hidden>
     <div class="pf-card" data-pf="card">
-      <div class="pf-banner" data-pf="banner"><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
+      <div class="pf-banner" data-pf="banner"><div class="bn-blur"></div><div class="bn-img"></div><canvas class="pf-fx" data-pf="fx" aria-hidden="true"></canvas></div>
       <div class="pf-head">
         <img class="pf-avatar" id="pu-avatar" alt="">
         <div class="pf-names"><h1 data-pf="name" id="pu-name"></h1><p id="pu-status"></p></div>
@@ -520,9 +522,12 @@ def public_profile_page():
           <div><b id="pu-hours">&ndash;</b><span>hours fished</span></div>
         </div>
       </div>
-      <div class="pf-box"><h3>Best catches</h3><ol class="best" id="pu-best"></ol></div>
+      <div class="pf-box"><h3>Status</h3><p class="pu-fishing" id="pu-fishing"></p></div>
     </div>
-    <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pu-ms"></div></div>
+    <div class="pf-grid pf-grid2">
+      <div class="pf-box pf-best"><h3>Best catches</h3><ol class="best" id="pu-best"></ol></div>
+      <div class="pf-box pf-ms"><h3>Milestones</h3><div class="ms-badges" id="pu-ms"></div></div>
+    </div>
   </div>
 </div>
 """ + FOOT
